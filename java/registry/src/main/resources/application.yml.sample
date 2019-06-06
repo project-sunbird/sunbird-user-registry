@@ -94,18 +94,18 @@ database:
       #     ** Example - Postgres - jdbc:postgresql://localhost:5432/yourdb
       #     * 3. NoSQL  databases (Cassandra)
       #     ** Example - cassandra - jdbc:cassandra://localhost:9160/yourdb
-      uri: ${connectionInfo_uri:bolt://localhost:7687}
+      uri: ${connectionInfo_uri:jdbc:postgresql://localhost:5432/yourdb}
 
-      username: ${connectionInfo_username:}
-      password: ${connectionInfo_password:}
+      username: ${connectionInfo_username:postgres}
+      password: ${connectionInfo_password:postgres}
 
       # Any other shard information follows...
     #-
       #shardId: shard2
       #shardLabel: 2
-      #uri: ${connectionInfo_uri:bolt://localhost:7688}
-      #username: ${connectionInfo_username:neo4j}
-      #password: ${connectionInfo_password:}
+      #uri: ${connectionInfo_uri:jdbc:postgresql://localhost:5432/yourdb}
+      #username: ${connectionInfo_username:postgres}
+      #password: ${connectionInfo_password:postgres}
 
 ##################################################################################
 # Uncomment the following section to use Cassandra as backend store              #
