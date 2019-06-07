@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "JobProfile": {
+      "$ref": "#/definitions/JobProfile"
+    }
+  },
+  "required": [
+    "JobProfile"
+  ],
+  "title":"JobProfile",
+  "definitions": {
+    "JobProfile": {
+      "type": "object",
+      "title": "The JobProfile Schema",
+      "required": [
+        "jobName",
+        "joiningDate",
+        "userId"
+      ],
+      "properties": {
+        "addressId": {
+          "type": "string",
+          "title": "Address Id"
+        },
+        "endDate": {
+          "type": "string",
+          "title": "End Date"
+        },
+        "isCurrentJob": {
+          "type": "boolean",
+          "title": "Current Job"
+        },
+        "jobName": {
+          "type": "string",
+          "title": "Job Name"
+        },
+        "joiningDate": {
+          "type": "string",
+          "title": "Joining Date"
+        },
+        "orgId": {
+          "type": "string",
+          "title": "Organisation Id"
+        },
+        "orgName": {
+          "type": "string",
+          "title": "Organisation Name"
+        },
+        "userId": {
+          "type": "string",
+          "title": "User Id"
+        },
+        "isDeleted": {
+          "type": "boolean",
+          "title": "Is Deleted"
+        },
+        "isRejected": {
+          "type": "boolean",
+          "title": "Is Rejected"
+        },
+        "isVerified": {
+          "type": "boolean",
+          "title": "Is Verified"
+        },
+        "verifiedBy": {
+          "type": "string",
+          "title": "Verified By"
+        },
+        "verifiedDate": {
+          "type": "string",
+          "title": "Verified Date"
+        }
+      }
+    }
+  },
+  "_osConfig": {
+    "osComment": ["This section contains the OpenSABER specific configuration information",
+      "privateFields: Optional; list of field names to be encrypted and stored in database",
+      "signedFields: Optional; list of field names that must be pre-signed",
+      "indexFields: Optional; list of field names used for creating index. Enclose within braces to indicate it is a composite index. In this definition, (serialNum, teacherCode) is a composite index and teacherName is a single column index.",
+      "uniqueIndexFields: Optional; list of field names used for creating unique index. Field names must be different from index field name",
+      "systemFields: Optional; list of fields names used for system standard information like created, updated timestamps and userid"],
+
+    "privateFields": [],
+    "signedFields": [],
+    "indexFields": ["userId"],
+    "uniqueIndexFields": [],
+    "systemFields": ["createdAt", "updatedAt", "createdBy", "updatedBy"]
+  }
+}

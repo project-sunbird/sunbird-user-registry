@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "Education": {
+      "$ref": "#/definitions/Education"
+    }
+  },
+  "required": [
+    "Education"
+  ],
+  "title":"Education",
+  "definitions": {
+    "Education": {
+      "type": "object",
+      "title": "The Education Schema",
+      "required": [
+        "name",
+        "yearOfPassing",
+        "userId"
+      ],
+      "properties": {
+        "addressId": {
+          "type": "string",
+          "title": "Address Id"
+        },
+        "degree": {
+          "type": "string",
+          "title": "Degree"
+        },
+        "duration": {
+          "type": "integer",
+          "title": "Duration"
+        },
+        "grade": {
+          "type": "string",
+          "title": "Grade"
+        },
+        "isDeleted": {
+          "type": "boolean",
+          "title": "Is Deleted"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name"
+        },
+        "percentage": {
+          "type": "number",
+          "title": "Percentage"
+        },
+        "userId": {
+          "type": "string",
+          "title": "User Id"
+        },
+        "yearOfPassing": {
+          "type": "integer",
+          "title": "Year Of Passing"
+        }
+      }
+    }
+  },
+  "_osConfig": {
+    "osComment": ["This section contains the OpenSABER specific configuration information",
+      "privateFields: Optional; list of field names to be encrypted and stored in database",
+      "signedFields: Optional; list of field names that must be pre-signed",
+      "indexFields: Optional; list of field names used for creating index. Enclose within braces to indicate it is a composite index. In this definition, (serialNum, teacherCode) is a composite index and teacherName is a single column index.",
+      "uniqueIndexFields: Optional; list of field names used for creating unique index. Field names must be different from index field name",
+      "systemFields: Optional; list of fields names used for system standard information like created, updated timestamps and userid"],
+
+    "privateFields": [],
+    "signedFields": [],
+    "indexFields": ["userId"],
+    "uniqueIndexFields": [],
+    "systemFields": ["createdAt", "updatedAt", "createdBy", "updatedBy"]
+  }
+}

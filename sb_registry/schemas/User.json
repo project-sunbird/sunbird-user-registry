@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "User": {
+      "$ref": "#/definitions/User"
+    }
+  },
+  "required": [
+    "User"
+  ],
+  "title":"User",
+  "definitions": {
+    "User": {
+      "$id": "#/properties/User",
+      "type": "object",
+      "title": "The User Schema",
+      "required": [
+        "channel",
+        "email",
+        "loginId",
+        "status",
+        "userName",
+        "phone"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "User ID"
+        },
+        "channel": {
+          "type": "string",
+          "title": "User belong to the channel"
+        },
+        "countryCode": {
+          "type": "string",
+          "title": "Country code of user"
+        },
+        "currentLoginTime": {
+          "type": "string",
+          "title": "Current login time"
+        },
+        "dob": {
+          "type": "string",
+          "title": "Date of birth"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email id"
+        },
+        "emailVerified": {
+          "type": "boolean",
+          "title": "Email Verified"
+        },
+        "firstName": {
+          "type": "string",
+          "title": "First name of user"
+        },
+        "lastName": {
+          "type": "string",
+          "title": "Last name of user"
+        },
+        "gender": {
+          "type": "string",
+          "title": "Gender of user"
+        },
+        "isDeleted": {
+          "type": "boolean",
+          "title": "User is deleted"
+        },
+        "lastLoginTime": {
+          "type": "string",
+          "title": "Last login time"
+        },
+        "locationIds": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Location Ids"
+        },
+        "phone": {
+          "type": "string",
+          "title": "Phone number"
+        },
+        "phoneVerified": {
+          "type": "boolean",
+          "title": "Phone Verified"
+        },
+        "rootOrgId": {
+          "type": "string",
+          "title": "Root organisation ID"
+        },
+        "status": {
+          "type": "integer",
+          "title": "Status"
+        },
+        "tncAcceptedOn": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Terms and Conditions Accepted on"
+        },
+        "tncAcceptedVersion": {
+          "type": "string",
+          "title": "Terms and Conditions Accepted Version"
+        },
+        "loginId": {
+          "type": "string",
+          "title": "Login ID"
+        },
+        "userName": {
+          "type": "string",
+          "title": "User name"
+        },
+        "userType": {
+          "type": "string",
+          "title": "User Type"
+        },
+        "frameWork": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Id of framework"
+            },
+            "board": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "title": "Board of education"
+            },
+            "gradeLevel": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "title": "Grade Level"
+            },
+            "medium": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "title": "Medium"
+            },
+            "subject": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "title": "Subject"
+            }
+          }
+        }
+      }
+    }
+  },
+  "_osConfig": {
+    "osComment": ["This section contains the OpenSABER specific configuration information",
+      "privateFields: Optional; list of field names to be encrypted and stored in database",
+      "signedFields: Optional; list of field names that must be pre-signed",
+      "indexFields: Optional; list of field names used for creating index. Enclose within braces to indicate it is a composite index. In this definition, (serialNum, teacherCode) is a composite index and teacherName is a single column index.",
+      "uniqueIndexFields: Optional; list of field names used for creating unique index. Field names must be different from index field name",
+      "systemFields: Optional; list of fields names used for system standard information like created, updated timestamps and userid"],
+
+    "privateFields": ["phone", "email", "loginId", "userName", "status"],
+    "signedFields": [],
+    "indexFields": ["email","loginId","status","userName","phone"],
+    "uniqueIndexFields": ["loginId","email","phone"],
+    "systemFields": ["createdAt", "updatedAt", "createdBy", "updatedBy"]
+  }
+}
