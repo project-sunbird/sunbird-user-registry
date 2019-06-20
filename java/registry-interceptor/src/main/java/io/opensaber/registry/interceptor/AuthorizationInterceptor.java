@@ -12,7 +12,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Component
+//@Component
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
 	private static Logger logger = LoggerFactory.getLogger(AuthorizationInterceptor.class);

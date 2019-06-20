@@ -1,9 +1,9 @@
 package io.opensaber.registry.controller;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;/*
 import io.opensaber.registry.authorization.AuthorizationToken;
-import io.opensaber.registry.authorization.pojos.AuthInfo;
+import io.opensaber.registry.authorization.pojos.AuthInfo;*/
 import io.opensaber.registry.middleware.util.Constants;
 import io.opensaber.registry.sink.DBProviderFactory;
 import io.opensaber.registry.sink.DatabaseProvider;
@@ -12,9 +12,9 @@ import org.apache.commons.lang.StringUtils;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest;/*
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolder;*/
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.BufferedReader;
@@ -50,13 +50,13 @@ abstract public class RegistryTestBase {
 		TestHelper.clearData(databaseProvider);
 		databaseProvider.getGraphStore().addVertex(Constants.GRAPH_GLOBAL_CONFIG).property(Constants.PERSISTENT_GRAPH,
 				true);
-		AuthInfo authInfo = new AuthInfo();
+		/*AuthInfo authInfo = new AuthInfo();
 		authInfo.setAud("aud");
 		authInfo.setName("name");
 		authInfo.setSub("sub");
 		AuthorizationToken authorizationToken = new AuthorizationToken(authInfo,
 				Collections.singletonList(new SimpleGrantedAuthority("blah")));
-		SecurityContextHolder.getContext().setAuthentication(authorizationToken);
+		SecurityContextHolder.getContext().setAuthentication(authorizationToken);*/
 	}
 
 	public static String generateRandomId() {

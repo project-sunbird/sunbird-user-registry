@@ -12,14 +12,9 @@ import io.opensaber.elastic.IElasticService;
 import io.opensaber.pojos.AuditRecord;
 import io.opensaber.pojos.OpenSaberInstrumentation;
 import io.opensaber.pojos.Response;
-import io.opensaber.registry.authorization.AuthorizationFilter;
-import io.opensaber.registry.authorization.KeyCloakServiceImpl;
-import io.opensaber.registry.exception.CustomException;
-import io.opensaber.registry.exception.CustomExceptionHandler;
+import io.opensaber.registry.exception.CustomException;/*
+import io.opensaber.registry.exception.CustomExceptionHandler;*/
 import io.opensaber.registry.frame.FrameContext;
-import io.opensaber.registry.interceptor.AuthorizationInterceptor;
-import io.opensaber.registry.interceptor.RequestIdValidationInterceptor;
-import io.opensaber.registry.interceptor.ValidationInterceptor;
 import io.opensaber.registry.middleware.Middleware;
 import io.opensaber.registry.middleware.util.Constants;
 import io.opensaber.registry.middleware.util.Constants.SchemaType;
@@ -50,6 +45,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.task.TaskExecutor;
@@ -69,11 +65,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 @Configuration
 @EnableRetry
 @EnableAsync
-public class GenericConfiguration implements WebMvcConfigurer {
+@ComponentScan(basePackages = { "io.opensaber.registry", "io.opensaber.pojos"})
+public class GenericConfiguration {
 
 	private static Logger logger = LoggerFactory.getLogger(GenericConfiguration.class);
 	private final String NONE_STR = "none";
@@ -141,12 +137,12 @@ public class GenericConfiguration implements WebMvcConfigurer {
 	@Value("${read.providerName}")
 	private String readProviderName;
 	
-	static {
+	/*static {
 		Config config = ConfigFactory.parseResources("opensaber-actors.conf");
 
 		SunbirdActorFactory sunbirdActorFactory = new SunbirdActorFactory(config, "io.opensaber.actors");
 		sunbirdActorFactory.init("opensaber-actors");
-	}
+	}*/
 
 	@Autowired
 	private DBConnectionInfoMgr dbConnectionInfoMgr;
@@ -210,26 +206,6 @@ public class GenericConfiguration implements WebMvcConfigurer {
 	@Bean
 	public ConfigurationHelper configurationHelper() {
 		return new ConfigurationHelper();
-	}
-
-	@Bean
-	public AuthorizationInterceptor authorizationInterceptor() {
-		return new AuthorizationInterceptor(authorizationFilter());
-	}
-
-	@Bean
-	public RequestIdValidationInterceptor requestIdValidationInterceptor() {
-		return new RequestIdValidationInterceptor(requestIdMap());
-	}
-
-	@Bean
-	public ValidationInterceptor validationInterceptor() throws IOException, CustomException {
-		return new ValidationInterceptor(new ValidationFilter(validationServiceImpl()));
-	}
-
-	@Bean
-	public Middleware authorizationFilter() {
-		return new AuthorizationFilter(new KeyCloakServiceImpl());
 	}
 	
     @Bean
@@ -328,7 +304,7 @@ public class GenericConfiguration implements WebMvcConfigurer {
 	 * the attachment are read from application configuration.
 	 * 
 	 * @param registry
-	 */
+	 *//*
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		int orderIdx = 1;
@@ -371,7 +347,7 @@ public class GenericConfiguration implements WebMvcConfigurer {
 	@Bean
 	public HandlerExceptionResolver customExceptionHandler() {
 		return new CustomExceptionHandler(gson());
-	}
+	}*/
 
 	/** This method creates ThreadPool task-executor
 	 * @return - TaskExecutor

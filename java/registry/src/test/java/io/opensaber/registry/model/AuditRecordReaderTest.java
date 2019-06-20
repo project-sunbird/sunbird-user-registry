@@ -1,7 +1,7 @@
 package io.opensaber.registry.model;
 
-import io.opensaber.pojos.AuditRecord;
-import io.opensaber.registry.authorization.pojos.AuthInfo;
+import io.opensaber.pojos.AuditRecord;/*
+import io.opensaber.registry.authorization.pojos.AuthInfo;*/
 import io.opensaber.registry.config.GenericConfiguration;
 import io.opensaber.registry.exception.audit.LabelCannotBeNullException;
 import io.opensaber.registry.middleware.util.Constants;
@@ -55,7 +55,7 @@ public class AuditRecordReaderTest {
 	private String registrySystemContext;
 	private GraphTraversal hasLabelMock;
 	private GraphTraversal traversalMock;
-	private AuthInfo authInfo;
+	/*private AuthInfo authInfo;*/
 
 	@Before
 	public void setUp() throws Exception {
@@ -65,7 +65,7 @@ public class AuditRecordReaderTest {
 		this.VMock = mock(GraphTraversal.class);
 		this.hasLabelMock = mock(GraphTraversal.class);
 		this.traversalMock = mock(GraphTraversal.class);
-		this.authInfo = mock(AuthInfo.class);
+		/*this.authInfo = mock(AuthInfo.class);*/
 		when(databaseProviderMock.getGraphStore()).thenReturn(graphMock);
 		when(graphMock.traversal()).thenReturn(graphTraversalSourceMock);
 		when(graphTraversalSourceMock.clone()).thenReturn(graphTraversalSourceCloneMock);

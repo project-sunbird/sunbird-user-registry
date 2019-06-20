@@ -1,3 +1,4 @@
+/*
 package io.opensaber.registry.exception;
 
 import com.google.gson.Gson;
@@ -34,3 +35,4 @@ public class CustomExceptionHandler extends BaseResponseHandler implements Handl
 	}
 
 }
+*/

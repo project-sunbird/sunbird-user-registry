@@ -43,7 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
+//@RestController
 public class RegistryController {
     private static Logger logger = LoggerFactory.getLogger(RegistryController.class);
     @Autowired
