@@ -1,3 +1,4 @@
+/*
 package io.opensaber.registry.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,11 +30,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+*/
 /**
  * This class provides native search which hits the native database
  * Hence, this have performance in-efficiency on search operations    
  * 
- */
+ *//*
+
 @Component
 public class NativeReadService implements IReadService {
 
@@ -42,7 +45,8 @@ public class NativeReadService implements IReadService {
 	@Autowired
 	private DefinitionsManager definitionsManager;
 
-	@Autowired
+	//@Autowired
+	//shard is removed from autowired
 	private Shard shard;
 
 	@Autowired
@@ -54,7 +58,8 @@ public class NativeReadService implements IReadService {
 	@Value("${database.uuidPropertyName}")
 	public String uuidPropertyName;
 
-	/**
+	*/
+/**
 	 * This method interacts with the native db and reads the record
 	 *
 	 * @param id           - osid
@@ -62,7 +67,8 @@ public class NativeReadService implements IReadService {
 	 * @param configurator
 	 * @return
 	 * @throws Exception
-	 */
+	 *//*
+
 	@Override
 	public JsonNode getEntity(String id, String entityType, ReadConfigurator configurator) throws Exception {
         AuditRecord auditRecord = null;
@@ -93,3 +99,4 @@ public class NativeReadService implements IReadService {
 	}
 
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package io.opensaber.registry.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,11 +25,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+*/
 /**
  * This class provide read option with Elastic search
  * database to operate
  *
- */
+ *//*
+
 @Component
 public class ElasticReadService implements IReadService {
 
@@ -45,7 +48,8 @@ public class ElasticReadService implements IReadService {
     @Autowired
     private APIMessage apiMessage;
 
-    /**
+    */
+/**
      * This method interacts with the Elasticsearch and reads the record
      *
      * @param id           - osid
@@ -53,7 +57,8 @@ public class ElasticReadService implements IReadService {
      * @param configurator
      * @return
      * @throws Exception
-     */
+     *//*
+
     @Override
     public JsonNode getEntity(String id, String entityType, ReadConfigurator configurator) throws Exception {
         JsonNode result = null;
@@ -86,3 +91,4 @@ public class ElasticReadService implements IReadService {
     }
 
 }
+*/

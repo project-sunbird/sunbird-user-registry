@@ -1,13 +1,13 @@
 package io.opensaber.registry.sink.shard;
 
 import io.opensaber.registry.sink.DatabaseProvider;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
-@Component("shard")
-@Scope(value = WebApplicationContext.SCOPE_REQUEST,
-        proxyMode = ScopedProxyMode.TARGET_CLASS)
+/*@Component("shard")
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE,
+        proxyMode = ScopedProxyMode.TARGET_CLASS)*/
 public class Shard {
 	
 	private String shardId;

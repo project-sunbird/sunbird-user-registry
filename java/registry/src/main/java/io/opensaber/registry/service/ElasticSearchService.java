@@ -1,3 +1,4 @@
+/*
 package io.opensaber.registry.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,11 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+*/
 /**
  * This class provide search option with Elastic search Hits elastic search
  * database to operate
  *
- */
+ *//*
+
 @Component
 public class ElasticSearchService implements ISearchService {
     private static Logger logger = LoggerFactory.getLogger(ElasticSearchService.class);
@@ -77,3 +80,4 @@ public class ElasticSearchService implements ISearchService {
     }
 
 }
+*/

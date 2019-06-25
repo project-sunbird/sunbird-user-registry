@@ -1,3 +1,4 @@
+/*
 package io.opensaber.validators;
 
 import io.opensaber.pojos.APIMessage;
@@ -24,3 +25,4 @@ public class ValidationFilter implements Middleware {
 		return true;
 	}
 }
+*/

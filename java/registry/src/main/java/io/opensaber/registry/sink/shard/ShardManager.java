@@ -22,7 +22,7 @@ public class ShardManager {
 	private DBProviderFactory dbProviderFactory;
 	@Autowired
 	private IShardAdvisor shardAdvisor;
-	@Autowired
+	//@Autowired
 	private Shard shard;
 
 
@@ -36,6 +36,7 @@ public class ShardManager {
 	private void activateDbShard(Object attributeValue) {
 		DBConnectionInfo connectionInfo = shardAdvisor.getShard(attributeValue);
 	    DatabaseProvider databaseProvider = dbProviderFactory.getInstance(connectionInfo);
+	    shard = new Shard();
 	    shard.setShardId(connectionInfo.getShardId());
 	    shard.setShardLabel(connectionInfo.getShardLabel());
 	    shard.setDatabaseProvider(databaseProvider);

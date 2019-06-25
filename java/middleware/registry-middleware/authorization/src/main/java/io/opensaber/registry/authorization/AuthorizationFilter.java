@@ -1,3 +1,4 @@
+/*
 package io.opensaber.registry.authorization;
 
 import com.google.gson.Gson;
@@ -37,13 +38,15 @@ public class AuthorizationFilter implements Middleware {
 		this.keyCloakServiceImpl = keyCloakServiceImpl;
 	}
 
-	/**
+	*/
+/**
 	 * This method validates JWT access token against Sunbird Keycloak server and
 	 * sets the valid access token to a map object
 	 * 
 	 * @param apiMessage
 	 * @throws MiddlewareHaltException
-	 */
+	 *//*
+
 	@Override
 	public boolean execute(APIMessage apiMessage) throws MiddlewareHaltException {
 		try {
@@ -85,12 +88,14 @@ public class AuthorizationFilter implements Middleware {
 		return true;
 	}
 
-	/**
+	*/
+/**
 	 * This method extracts Authorisation information ,i.e. AuthInfo from input JWT
 	 * access token
 	 *
 	 * @param token
-	 */
+	 *//*
+
 	public AuthInfo extractTokenIntoAuthInfo(String token) {
 		AuthInfo authInfo = new AuthInfo();
 		try {
@@ -122,3 +127,4 @@ public class AuthorizationFilter implements Middleware {
 	}
 
 }
+*/

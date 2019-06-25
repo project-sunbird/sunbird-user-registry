@@ -19,11 +19,11 @@
                 <artifactId>jsonld-conversion</artifactId>
                 <version>${jsonldConversionVersion}</version>
             </dependency>
-            <dependency>
+           <!-- <dependency>
                 <groupId>io.opensaber</groupId>
                 <artifactId>authorization</artifactId>
                 <version>${authorizationVersion}</version>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>io.opensaber</groupId>
                 <artifactId>validation</artifactId>

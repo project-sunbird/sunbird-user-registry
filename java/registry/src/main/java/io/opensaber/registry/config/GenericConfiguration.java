@@ -15,7 +15,6 @@ import io.opensaber.pojos.Response;
 import io.opensaber.registry.exception.CustomException;/*
 import io.opensaber.registry.exception.CustomExceptionHandler;*/
 import io.opensaber.registry.frame.FrameContext;
-import io.opensaber.registry.middleware.Middleware;
 import io.opensaber.registry.middleware.util.Constants;
 import io.opensaber.registry.middleware.util.Constants.SchemaType;
 import io.opensaber.registry.model.DBConnectionInfoMgr;
@@ -33,7 +32,6 @@ import io.opensaber.registry.transform.Transformer;
 import io.opensaber.registry.util.DefinitionsManager;
 import io.opensaber.registry.util.ServiceProvider;
 import io.opensaber.validators.IValidate;
-import io.opensaber.validators.ValidationFilter;
 import io.opensaber.validators.json.jsonschema.JsonValidationServiceImpl;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.client.HttpClient;
@@ -137,12 +135,12 @@ public class GenericConfiguration {
 	@Value("${read.providerName}")
 	private String readProviderName;
 	
-	/*static {
+	static {
 		Config config = ConfigFactory.parseResources("opensaber-actors.conf");
 
 		SunbirdActorFactory sunbirdActorFactory = new SunbirdActorFactory(config, "io.opensaber.actors");
 		sunbirdActorFactory.init("opensaber-actors");
-	}*/
+	}
 
 	@Autowired
 	private DBConnectionInfoMgr dbConnectionInfoMgr;

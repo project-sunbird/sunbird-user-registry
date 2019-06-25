@@ -1,3 +1,4 @@
+/*
 package io.opensaber.registry.service;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -35,11 +36,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+*/
 /**
  * This class provides native search which hits the native database
  * Hence, this have performance in-efficiency on search operations    
  * 
- */
+ *//*
+
 @Component
 public class NativeSearchService implements ISearchService {
 
@@ -54,7 +57,8 @@ public class NativeSearchService implements ISearchService {
 	@Autowired
 	private ShardManager shardManager;
 
-	@Autowired
+	//@Autowired
+	//shard is un-autowired
 	private Shard shard;
 
 	@Autowired
@@ -121,12 +125,14 @@ public class NativeSearchService implements ISearchService {
 		return buildResultNode(searchQuery, result);
 	}
 	
-	/**
+	*/
+/**
 	 * combines all the nodes for an entity
 	 * @param entity
 	 * @param allShardResult
 	 * @return
-	 */
+	 *//*
+
 	private ArrayNode getEntityAttibute(String entity, ArrayNode allShardResult) {
 		ArrayNode resultArray = JsonNodeFactory.instance.arrayNode();
 		for (int i = 0; i < allShardResult.size(); i++) {
@@ -134,12 +140,14 @@ public class NativeSearchService implements ISearchService {
 		}
 		return resultArray;
 	}
-	/**
+	*/
+/**
 	 * Builds result node from given array of shard nodes 
 	 * @param searchQuery
 	 * @param allShardResult
 	 * @return
-	 */
+	 *//*
+
 	private JsonNode buildResultNode(SearchQuery searchQuery, ArrayNode allShardResult) {
 		ObjectNode resultNode = JsonNodeFactory.instance.objectNode();
 		for (String entity : searchQuery.getEntityTypes()) {
@@ -149,3 +157,4 @@ public class NativeSearchService implements ISearchService {
 		return resultNode;
 	}
 }
+*/

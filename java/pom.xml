@@ -33,7 +33,7 @@
         <module>middleware-commons</module>
         <module>middleware</module>
         <module>validators</module>
-        <module>registry-interceptor</module>
+       <!-- <module>registry-interceptor</module>-->
         <module>transaction-event-handler</module>
         <module>registry</module>
         <module>elastic-search</module>

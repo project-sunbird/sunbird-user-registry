@@ -13,7 +13,7 @@
     </parent>
 
     <modules>
-        <module>authorization</module>
+        <!--<module>authorization</module>-->
         <module>validation</module>
     </modules>
 </project>

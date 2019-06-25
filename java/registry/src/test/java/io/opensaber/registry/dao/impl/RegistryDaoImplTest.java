@@ -1,6 +1,5 @@
 package io.opensaber.registry.dao.impl;
 
-import io.opensaber.pojos.APIMessage;
 import io.opensaber.registry.config.GenericConfiguration;
 import io.opensaber.registry.controller.RegistryTestBase;
 import io.opensaber.registry.dao.RegistryDaoImpl;
@@ -34,7 +33,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { RegistryDaoImpl.class, Environment.class, ObjectMapper.class, GenericConfiguration.class,
-		EncryptionServiceImpl.class, APIMessage.class, DBConnectionInfoMgr.class})
+		EncryptionServiceImpl.class, DBConnectionInfoMgr.class})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles(Constants.TEST_ENVIRONMENT)
 public class RegistryDaoImplTest extends RegistryTestBase {

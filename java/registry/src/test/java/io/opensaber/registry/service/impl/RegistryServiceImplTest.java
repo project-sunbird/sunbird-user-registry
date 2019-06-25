@@ -4,7 +4,6 @@ import io.opensaber.pojos.AuditRecord;
 import io.opensaber.pojos.HealthCheckResponse;
 import io.opensaber.registry.app.OpenSaberApplication;
 import io.opensaber.registry.config.GenericConfiguration;
-import io.opensaber.registry.controller.RegistryController;
 import io.opensaber.registry.dao.IRegistryDao;
 import io.opensaber.registry.middleware.util.Constants;
 import io.opensaber.registry.model.DBConnectionInfo;
@@ -43,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 @Ignore
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { OpenSaberApplication.class, RegistryController.class, GenericConfiguration.class,
+@SpringBootTest(classes = { OpenSaberApplication.class, GenericConfiguration.class,
 		EncryptionServiceImpl.class, AuditRecord.class, SignatureServiceImpl.class,
 		DBProviderFactory.class, DBConnectionInfoMgr.class, DBConnectionInfo.class, RegistryServiceImpl.class })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

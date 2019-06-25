@@ -1,9 +1,12 @@
+/*
 package io.opensaber.pojos;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -15,25 +18,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component("apiMessage")
-@Scope(value = WebApplicationContext.SCOPE_REQUEST,
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE,
 					proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class APIMessage {
 	private static Logger logger = LoggerFactory.getLogger(APIMessage.class);
 
-	/* HTTP wrapper */
+	*/
+/* HTTP wrapper *//*
+
 	private RequestWrapper requestWrapper;
 
-	/* Custom pojo specific to org */
+	*/
+/* Custom pojo specific to org *//*
+
 	private Request request;
 
-	/* A temporary map to pass data cooked up in the interceptors, modules */
+	*/
+/* A temporary map to pass data cooked up in the interceptors, modules *//*
+
 	private Map<String, Object> localMap = new HashMap<>();
 
 	private String userID;
 
+	@Autowired
 	public APIMessage() {}
 
-	@Autowired
+
 	public APIMessage(HttpServletRequest servletRequest) {
 		request = new Request();
 		requestWrapper = new RequestWrapper(servletRequest);
@@ -46,18 +56,22 @@ public class APIMessage {
 		}
 	}
 
-	/**
+	*/
+/**
 	 * Get the message body
 	 * @return
-	 */
+	 *//*
+
 	public String getBody() {
 		return requestWrapper.getBody();
 	}
 
-	/**
+	*/
+/**
 	 * Provides access to HTTPServletRequest operations
 	 * @return
-	 */
+	 *//*
+
 	public RequestWrapper getRequestWrapper() {
 		return requestWrapper;
 	}
@@ -66,28 +80,34 @@ public class APIMessage {
 		return request;
 	}
 
-	/**
+	*/
+/**
 	 * Add some temporary request-specific data, say massaged data
 	 * @param key
 	 * @param data
-	 */
+	 *//*
+
 	public void addLocalMap(String key, Object data) {
 	    localMap.put(key, data);
     }
 
-	/**
+	*/
+/**
 	 * Read back from local
 	 * @param key
 	 * @return
-	 */
+	 *//*
+
 	public Object getLocalMap(String key) {
 	    return localMap.get(key);
     }
 
-	/**
+	*/
+/**
 	 * Get a map of all temporary data
 	 * @return
-	 */
+	 *//*
+
 	public Map<String, Object> getLocalMap() {
 		return localMap;
 	}
@@ -100,3 +120,4 @@ public class APIMessage {
 		this.userID = userID;
 	}
 }
+*/
