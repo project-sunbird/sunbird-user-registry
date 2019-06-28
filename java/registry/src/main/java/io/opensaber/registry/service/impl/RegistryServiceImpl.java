@@ -173,7 +173,7 @@ public class RegistryServiceImpl implements RegistryService {
      * @return
      * @throws Exception
      */
-    public String addEntity(String jsonString, Shard shard, String userId) throws Exception {
+    public String addEntity(Shard shard, String jsonString, String userId) throws Exception {
         Transaction tx = null;
         String entityId = "entityPlaceholderId";
         ObjectMapper mapper = new ObjectMapper();
@@ -196,7 +196,6 @@ public class RegistryServiceImpl implements RegistryService {
             try (OSGraph osGraph = dbProvider.getOSGraph()) {
                 Graph graph = osGraph.getGraphStore();
                 tx = dbProvider.startTransaction(graph);
-                System.out.println("os transaction::::::::"+ tx);
                 entityId = registryDao.addEntity(graph, rootNode);
                 if (commitEnabled) {
                     dbProvider.commitTransaction(graph, tx);
@@ -220,9 +219,7 @@ public class RegistryServiceImpl implements RegistryService {
     public void updateEntity(String id, String jsonString, String userId) throws Exception {
         JsonNode inputNode = objectMapper.readTree(jsonString);
         String entityType = inputNode.fields().next().getKey();
-        //need to address userID later when working on this
         systemFieldsHelper.ensureUpdateAuditFields(entityType, inputNode.get(entityType), userId);
-
         if (encryptionEnabled) {
             inputNode = encryptionHelper.getEncryptedJson(inputNode);
         }

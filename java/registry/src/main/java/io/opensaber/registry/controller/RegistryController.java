@@ -196,7 +196,7 @@ public class RegistryController {
             Shard shard = shardManager.getShard(attribute);
 
             watch.start("RegistryController.addToExistingEntity");
-            String resultId = registryService.addEntity(jsonString,shard,apiMessage.getUserID());
+            String resultId = registryService.addEntity(shard,jsonString,apiMessage.getUserID());
             RecordIdentifier recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
             Map resultMap = new HashMap();
             String label = recordId.toString();
@@ -232,7 +232,7 @@ public class RegistryController {
         String label = apiMessage.getRequest().getRequestMapNode().get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
         RecordIdentifier recordId = RecordIdentifier.parse(label);
         String shardId = dbConnectionInfoMgr.getShardId(recordId.getShardLabel());
-        shardManager.activateShard(shardId);
+        Shard shard = shardManager.activateShard(shardId);
         logger.info("Read Api: shard id: " + recordId.getShardLabel() + " for label: " + label);
 
         boolean includeSignatures = (boolean) apiMessage.getRequest().getRequestMap().getOrDefault("includeSignatures",
@@ -241,7 +241,7 @@ public class RegistryController {
         configurator.setIncludeTypeAttributes(requireLDResponse);
 
         try {
-            readService.setShard(shardManager.getShard(shardId));
+            readService.setShard(shard);
             JsonNode resultNode = readService.getEntity(recordId.getUuid(), entityType, configurator);
             // applying view-templates to response
             ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(apiMessage.getRequest().getRequestMapNode());

@@ -56,7 +56,7 @@ public class RegistryHelper {
             logger.info("Add api: entity type and shard propery: {}", shardManager.getShardProperty());
             Shard shard = shardManager.getShard(inputJson.get(shardManager.getShardProperty()));
             watch.start("RegistryController.addToExistingEntity");
-            String resultId = registryService.addEntity(jsonString,shard,"dummy-user");
+            String resultId = registryService.addEntity(shard, jsonString,"dummy-user");
             recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
             watch.stop("RegistryController.addToExistingEntity");
             logger.info("AddEntity,{}", resultId);
@@ -67,3 +67,4 @@ public class RegistryHelper {
         return recordId.toString();
     }
 }
+
