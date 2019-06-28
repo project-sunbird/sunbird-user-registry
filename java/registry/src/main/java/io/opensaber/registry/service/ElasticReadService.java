@@ -56,7 +56,7 @@ public class ElasticReadService implements IReadService {
      * @throws Exception
      */
     @Override
-    public JsonNode getEntity(String id, String entityType, ReadConfigurator configurator) throws Exception {
+    public JsonNode getEntity(Shard shard, String id, String entityType, ReadConfigurator configurator) throws Exception {
         JsonNode result = null;
         AuditRecord auditRecord = null;
         Map<String, Object> response = null;
@@ -84,11 +84,6 @@ public class ElasticReadService implements IReadService {
         ObjectNode resultNode = JsonNodeFactory.instance.objectNode();
         resultNode.set(entityType, result);
         return resultNode;
-    }
-
-    @Override
-    public void setShard(Shard shard) {
-
     }
 
 }

@@ -128,8 +128,4 @@ public interface ISearchService {
         return rangeValues;
     }
 
-    void setShard(Shard shard);
-
-
-
 }

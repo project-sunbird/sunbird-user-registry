@@ -24,9 +24,6 @@ public class RegistryHelper {
     private static Logger logger = LoggerFactory.getLogger(RegistryHelper.class);
 
     @Autowired
-    private IValidate iValidate;
-
-    @Autowired
     private ShardManager shardManager;
 
     @Autowired
@@ -47,16 +44,16 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public String addEntity(JsonNode inputJson) throws Exception {
+    public String addEntity(JsonNode inputJson, String userId) throws Exception {
         RecordIdentifier recordId = null;
         String entityType = inputJson.fields().next().getKey();
         String jsonString = objectMapper.writeValueAsString(inputJson);
-        iValidate.validate(entityType, jsonString);
         try {
             logger.info("Add api: entity type and shard propery: {}", shardManager.getShardProperty());
-            Shard shard = shardManager.getShard(inputJson.get(shardManager.getShardProperty()));
+
+            Shard shard = shardManager.getShard(inputJson.get(entityType).get(shardManager.getShardProperty()));
             watch.start("RegistryController.addToExistingEntity");
-            String resultId = registryService.addEntity(shard, jsonString,"dummy-user");
+            String resultId = registryService.addEntity(shard, jsonString,userId);
             recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
             watch.stop("RegistryController.addToExistingEntity");
             logger.info("AddEntity,{}", resultId);

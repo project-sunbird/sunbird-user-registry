@@ -78,8 +78,4 @@ public class ElasticSearchService implements ISearchService {
 
     }
 
-    @Override
-    public void setShard(Shard shard) {
-    }
-
 }

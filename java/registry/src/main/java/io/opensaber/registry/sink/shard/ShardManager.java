@@ -22,7 +22,7 @@ public class ShardManager {
 	private DBProviderFactory dbProviderFactory;
 	@Autowired
 	private IShardAdvisor shardAdvisor;
-	//@Autowired
+
 	private Shard shard;
 
 

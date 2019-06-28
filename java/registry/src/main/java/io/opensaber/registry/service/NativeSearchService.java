@@ -54,9 +54,6 @@ public class NativeSearchService implements ISearchService {
 	@Autowired
 	private ShardManager shardManager;
 
-	//@Autowired
-	private Shard shard;
-
 	@Autowired
 	private IAuditService auditService;
 
@@ -87,7 +84,7 @@ public class NativeSearchService implements ISearchService {
 		for (DBConnectionInfo dbConnection : dbConnectionInfoMgr.getConnectionInfo()) {
 
 			// TODO: parallel search.
-			shardManager.activateShard(dbConnection.getShardId());
+			Shard shard = shardManager.activateShard(dbConnection.getShardId());
 			IRegistryDao registryDao = new RegistryDaoImpl(shard.getDatabaseProvider(), definitionsManager, uuidPropertyName);
 			SearchDaoImpl searchDao = new SearchDaoImpl(registryDao);
 			try (OSGraph osGraph = shard.getDatabaseProvider().getOSGraph()) {
@@ -119,11 +116,6 @@ public class NativeSearchService implements ISearchService {
 		auditRecord.setUserId(apiMessage.getUserID()).setAction(Constants.AUDIT_ACTION_SEARCH).setTransactionId(transaction);
 		auditService.audit(auditRecord);
 		return buildResultNode(searchQuery, result);
-	}
-
-	@Override
-	public void setShard(Shard shard) {
-		this.shard = shard;
 	}
 
 	/**

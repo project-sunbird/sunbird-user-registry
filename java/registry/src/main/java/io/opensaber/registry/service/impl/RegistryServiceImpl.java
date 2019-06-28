@@ -93,9 +93,6 @@ public class RegistryServiceImpl implements RegistryService {
     @Value("${search.providerName}")
     private String searchProvider;
 
-    //@Autowired
-    private Shard shard;
-
     @Autowired
     private EntityParenter entityParenter;
 
@@ -104,11 +101,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     private AuditRecord auditRecord;
 
-    public void setShard(Shard shard) {
-        this.shard = shard;
-    }
-
-    public HealthCheckResponse health() throws Exception {
+    public HealthCheckResponse health(Shard shard) throws Exception {
         HealthCheckResponse healthCheck;
         boolean databaseServiceup = shard.getDatabaseProvider().isDatabaseServiceUp();
         boolean overallHealthStatus = databaseServiceup;
@@ -146,7 +139,7 @@ public class RegistryServiceImpl implements RegistryService {
      * @throws Exception
      */
     @Override
-    public void deleteEntityById(String uuid) throws Exception {
+    public void deleteEntityById(Shard shard, String uuid) throws Exception {
         DatabaseProvider databaseProvider = shard.getDatabaseProvider();
         IRegistryDao registryDao = new RegistryDaoImpl(databaseProvider, definitionsManager, uuidPropertyName);
         try (OSGraph osGraph = databaseProvider.getOSGraph()) {
@@ -216,7 +209,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @Override
-    public void updateEntity(String id, String jsonString, String userId) throws Exception {
+    public void updateEntity(Shard shard, String id, String jsonString, String userId) throws Exception {
         JsonNode inputNode = objectMapper.readTree(jsonString);
         String entityType = inputNode.fields().next().getKey();
         systemFieldsHelper.ensureUpdateAuditFields(entityType, inputNode.get(entityType), userId);
@@ -288,7 +281,7 @@ public class RegistryServiceImpl implements RegistryService {
             }
 
             // The entity type is a child and so could be different from parent entity type.
-            doUpdate(graph, registryDao, vr, inputNode.get(entityType));
+            doUpdate(shard, graph, registryDao, vr, inputNode.get(entityType));
 
             databaseProvider.commitTransaction(graph, tx);
             // elastic-search and audit akka calls starts here
@@ -325,7 +318,7 @@ public class RegistryServiceImpl implements RegistryService {
         logger.debug("callAuditESActors ends");
     }
 
-    private void doUpdateArray(Graph graph, IRegistryDao registryDao, VertexReader vr, Vertex blankArrVertex, ArrayNode arrayNode) {
+    private void doUpdateArray(Shard shard, Graph graph, IRegistryDao registryDao, VertexReader vr, Vertex blankArrVertex, ArrayNode arrayNode) {
         HashMap<String, Vertex> uuidVertexMap = vr.getUuidVertexMap();
         Set<String> updatedUuids = new HashSet<>();
 
@@ -363,7 +356,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private void doUpdate(Graph graph, IRegistryDao registryDao, VertexReader vr, JsonNode userInputNode) throws Exception {
+    private void doUpdate(Shard shard, Graph graph, IRegistryDao registryDao, VertexReader vr, JsonNode userInputNode) throws Exception {
         HashMap<String, Vertex> uuidVertexMap = vr.getUuidVertexMap();
         Vertex rootVertex = vr.getRootVertex();
 
@@ -405,7 +398,7 @@ public class RegistryServiceImpl implements RegistryService {
 
                         if (null != existArrayVertex) {
                             // updateArrayItems one by one
-                            doUpdateArray(graph, registryDao, vr, existArrayVertex, (ArrayNode) oneElementNode);
+                            doUpdateArray(shard, graph, registryDao, vr, existArrayVertex, (ArrayNode) oneElementNode);
                         } else {
                             VertexWriter vertexWriter = new VertexWriter(graph, shard.getDatabaseProvider(), uuidPropertyName);
                             vertexWriter.createArrayNode(rootVertex, oneElement.getKey(), (ArrayNode) oneElementNode);
@@ -416,7 +409,7 @@ public class RegistryServiceImpl implements RegistryService {
                     }
                 } else if (oneElementNode.isObject()) {
                     logger.info("Object node {}", oneElement.toString());
-                    doUpdate(graph, registryDao, vr, oneElementNode);
+                    doUpdate(shard, graph, registryDao, vr, oneElementNode);
                 }
             }
         } else {

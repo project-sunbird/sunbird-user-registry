@@ -42,9 +42,6 @@ public class NativeReadService implements IReadService {
 	@Autowired
 	private DefinitionsManager definitionsManager;
 
-	//@Autowired
-	private Shard shard;
-
 	@Autowired
 	private IAuditService auditService;
 
@@ -64,7 +61,7 @@ public class NativeReadService implements IReadService {
 	 * @throws Exception
 	 */
 	@Override
-	public JsonNode getEntity(String id, String entityType, ReadConfigurator configurator) throws Exception {
+	public JsonNode getEntity(Shard shard, String id, String entityType, ReadConfigurator configurator) throws Exception {
 		AuditRecord auditRecord = null;
 		DatabaseProvider dbProvider = shard.getDatabaseProvider();
 		IRegistryDao registryDao = new RegistryDaoImpl(dbProvider, definitionsManager, uuidPropertyName);
@@ -90,11 +87,6 @@ public class NativeReadService implements IReadService {
 			auditService.audit(auditRecord);
 			return result;
 		}
-	}
-
-	@Override
-	public void setShard(Shard shard) {
-		this.shard = shard;
 	}
 
 }
