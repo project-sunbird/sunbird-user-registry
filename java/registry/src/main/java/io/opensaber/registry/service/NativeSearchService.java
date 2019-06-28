@@ -37,8 +37,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 /**
  * This class provides native search which hits the native database
- * Hence, this have performance in-efficiency on search operations    
- * 
+ * Hence, this have performance in-efficiency on search operations
+ *
  */
 @Component
 public class NativeSearchService implements ISearchService {
@@ -54,7 +54,7 @@ public class NativeSearchService implements ISearchService {
 	@Autowired
 	private ShardManager shardManager;
 
-	@Autowired
+	//@Autowired
 	private Shard shard;
 
 	@Autowired
@@ -65,10 +65,10 @@ public class NativeSearchService implements ISearchService {
 
 	@Value("${database.uuidPropertyName}")
 	public String uuidPropertyName;
-	
+
 	@Value("${search.offset}")
 	private int offset;
-	
+
 	@Value("${search.limit}")
 	private int limit;
 
@@ -81,7 +81,7 @@ public class NativeSearchService implements ISearchService {
 		SearchQuery searchQuery = getSearchQuery(inputQueryNode, offset, limit);
 
 		if(searchQuery.getFilters().size() == 1 && searchQuery.getFilters().get(0).getOperator() == FilterOperators.queryString)
-            throw new IllegalArgumentException("free-text queries not supported for native search!");
+			throw new IllegalArgumentException("free-text queries not supported for native search!");
 
 		// Now, search across all shards and return the results.
 		for (DBConnectionInfo dbConnection : dbConnectionInfoMgr.getConnectionInfo()) {
@@ -93,21 +93,21 @@ public class NativeSearchService implements ISearchService {
 			try (OSGraph osGraph = shard.getDatabaseProvider().getOSGraph()) {
 				Graph graph = osGraph.getGraphStore();
 				try (Transaction tx = shard.getDatabaseProvider().startTransaction(graph)) {
-                    ObjectNode shardResult = (ObjectNode) searchDao.search(graph, searchQuery);
-                    if (!shard.getShardLabel().isEmpty()) {
-                        // Replace osid with shard details
-                        String prefix = shard.getShardLabel() + RecordIdentifier.getSeparator();
-                        JSONUtil.addPrefix((ObjectNode) shardResult, prefix, new ArrayList<>(Arrays.asList(uuidPropertyName)));
-                    }
-                   
-                    result.add(shardResult);
+					ObjectNode shardResult = (ObjectNode) searchDao.search(graph, searchQuery);
+					if (!shard.getShardLabel().isEmpty()) {
+						// Replace osid with shard details
+						String prefix = shard.getShardLabel() + RecordIdentifier.getSeparator();
+						JSONUtil.addPrefix((ObjectNode) shardResult, prefix, new ArrayList<>(Arrays.asList(uuidPropertyName)));
+					}
+
+					result.add(shardResult);
 					transaction.add(tx.hashCode());
 				}
 			} catch (Exception e) {
 				logger.error("search operation failed: {}", e);
 			}
 		}
-		
+
 		auditRecord = new AuditRecord();
 		for (String entity : searchQuery.getEntityTypes()) {
 			AuditInfo auditInfo = new AuditInfo();
@@ -120,7 +120,12 @@ public class NativeSearchService implements ISearchService {
 		auditService.audit(auditRecord);
 		return buildResultNode(searchQuery, result);
 	}
-	
+
+	@Override
+	public void setShard(Shard shard) {
+		this.shard = shard;
+	}
+
 	/**
 	 * combines all the nodes for an entity
 	 * @param entity
@@ -135,7 +140,7 @@ public class NativeSearchService implements ISearchService {
 		return resultArray;
 	}
 	/**
-	 * Builds result node from given array of shard nodes 
+	 * Builds result node from given array of shard nodes
 	 * @param searchQuery
 	 * @param allShardResult
 	 * @return

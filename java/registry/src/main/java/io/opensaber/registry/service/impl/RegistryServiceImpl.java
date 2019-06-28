@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.opensaber.actors.factory.MessageFactory;
-import io.opensaber.elastic.IElasticService;
-import io.opensaber.pojos.APIMessage;
 import io.opensaber.pojos.AuditInfo;
 import io.opensaber.pojos.AuditRecord;
 import io.opensaber.pojos.ComponentHealthInfo;
@@ -77,8 +75,6 @@ public class RegistryServiceImpl implements RegistryService {
     private SignatureHelper signatureHelper;
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private APIMessage apiMessage;
     @Value("${encryption.enabled}")
     private boolean encryptionEnabled;
 
@@ -97,7 +93,7 @@ public class RegistryServiceImpl implements RegistryService {
     @Value("${search.providerName}")
     private String searchProvider;
 
-    @Autowired
+    //@Autowired
     private Shard shard;
 
     @Autowired
@@ -177,14 +173,14 @@ public class RegistryServiceImpl implements RegistryService {
      * @return
      * @throws Exception
      */
-    public String addEntity(String jsonString) throws Exception {
+    public String addEntity(String jsonString, Shard shard, String userId) throws Exception {
         Transaction tx = null;
         String entityId = "entityPlaceholderId";
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(jsonString);
         String vertexLabel = rootNode.fieldNames().next();
 
-        systemFieldsHelper.ensureCreateAuditFields(vertexLabel, rootNode.get(vertexLabel), apiMessage.getUserID());
+        systemFieldsHelper.ensureCreateAuditFields(vertexLabel, rootNode.get(vertexLabel), userId);
 
         if (encryptionEnabled) {
             rootNode = encryptionHelper.getEncryptedJson(rootNode);
@@ -200,6 +196,7 @@ public class RegistryServiceImpl implements RegistryService {
             try (OSGraph osGraph = dbProvider.getOSGraph()) {
                 Graph graph = osGraph.getGraphStore();
                 tx = dbProvider.startTransaction(graph);
+                System.out.println("os transaction::::::::"+ tx);
                 entityId = registryDao.addEntity(graph, rootNode);
                 if (commitEnabled) {
                     dbProvider.commitTransaction(graph, tx);
@@ -220,11 +217,11 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @Override
-    public void updateEntity(String id, String jsonString) throws Exception {
+    public void updateEntity(String id, String jsonString, String userId) throws Exception {
         JsonNode inputNode = objectMapper.readTree(jsonString);
         String entityType = inputNode.fields().next().getKey();
-
-        systemFieldsHelper.ensureUpdateAuditFields(entityType, inputNode.get(entityType), apiMessage.getUserID());
+        //need to address userID later when working on this
+        systemFieldsHelper.ensureUpdateAuditFields(entityType, inputNode.get(entityType), userId);
 
         if (encryptionEnabled) {
             inputNode = encryptionHelper.getEncryptedJson(inputNode);
@@ -308,7 +305,8 @@ public class RegistryServiceImpl implements RegistryService {
         logger.debug("callAuditESActors started");
         List<AuditInfo> auditItemDetails = null;
         auditRecord = new AuditRecord();
-        auditRecord.setUserId(apiMessage.getUserID()).setAction(auditAction)
+        //need to work later
+        auditRecord.setUserId("UserID").setAction(auditAction)
                 .setTransactionId(new LinkedList<>(Arrays.asList(tx.hashCode()))).setRecordId(id).
                 setAuditId(UUID.randomUUID().toString()).setTimeStamp(DateUtil.getTimeStamp());
         JsonNode differenceJson = JSONUtil.diffJsonNode(readNode, mergedNode);
@@ -325,7 +323,7 @@ public class RegistryServiceImpl implements RegistryService {
 
         boolean elasticSearchEnabled = (searchProvider.equals("io.opensaber.registry.service.ElasticSearchService"));
         MessageProtos.Message message = MessageFactory.instance().createOSActorMessage(elasticSearchEnabled, operation,
-                                parentEntityType.toLowerCase(), entityRootId, mergedNode.get(parentEntityType), auditRecord);
+                parentEntityType.toLowerCase(), entityRootId, mergedNode.get(parentEntityType), auditRecord);
         ActorCache.instance().get(Router.ROUTER_NAME).tell(message, null);
         logger.debug("callAuditESActors ends");
     }
@@ -393,7 +391,7 @@ public class RegistryServiceImpl implements RegistryService {
                 Map.Entry<String, JsonNode> oneElement = fieldsItr.next();
                 JsonNode oneElementNode = oneElement.getValue();
                 if (!oneElement.getKey().equals(uuidPropertyName) &&
-                    oneElementNode.isValueNode() || oneElementNode.isArray()) {
+                        oneElementNode.isValueNode() || oneElementNode.isArray()) {
                     logger.info("Value or array node, going to update {}", oneElement.getKey());
 
                     if (oneElementNode.isArray()) {

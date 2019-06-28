@@ -31,8 +31,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * This class provides native search which hits the native database
- * Hence, this have performance in-efficiency on search operations    
- * 
+ * Hence, this have performance in-efficiency on search operations
+ *
  */
 @Component
 public class NativeReadService implements IReadService {
@@ -42,14 +42,14 @@ public class NativeReadService implements IReadService {
 	@Autowired
 	private DefinitionsManager definitionsManager;
 
-	@Autowired
+	//@Autowired
 	private Shard shard;
 
 	@Autowired
 	private IAuditService auditService;
 
-    @Autowired
-    private APIMessage apiMessage;
+	@Autowired
+	private APIMessage apiMessage;
 
 	@Value("${database.uuidPropertyName}")
 	public String uuidPropertyName;
@@ -65,7 +65,7 @@ public class NativeReadService implements IReadService {
 	 */
 	@Override
 	public JsonNode getEntity(String id, String entityType, ReadConfigurator configurator) throws Exception {
-        AuditRecord auditRecord = null;
+		AuditRecord auditRecord = null;
 		DatabaseProvider dbProvider = shard.getDatabaseProvider();
 		IRegistryDao registryDao = new RegistryDaoImpl(dbProvider, definitionsManager, uuidPropertyName);
 		try (OSGraph osGraph = dbProvider.getOSGraph()) {
@@ -80,8 +80,8 @@ public class NativeReadService implements IReadService {
 			}
 
 			dbProvider.commitTransaction(graph, tx);
-            auditRecord =  new AuditRecord();
-            auditRecord.setUserId(apiMessage.getUserID()).setAction(Constants.AUDIT_ACTION_READ).setRecordId(id).setTransactionId(new LinkedList<>(Arrays.asList(tx.hashCode())))
+			auditRecord =  new AuditRecord();
+			auditRecord.setUserId(apiMessage.getUserID()).setAction(Constants.AUDIT_ACTION_READ).setRecordId(id).setTransactionId(new LinkedList<>(Arrays.asList(tx.hashCode())))
 					.setAuditId(UUID.randomUUID().toString()).setTimeStamp(DateUtil.getTimeStamp());
 			AuditInfo auditInfo = new AuditInfo();
 			auditInfo.setOp(Constants.AUDIT_ACTION_READ_OP);
@@ -90,6 +90,11 @@ public class NativeReadService implements IReadService {
 			auditService.audit(auditRecord);
 			return result;
 		}
+	}
+
+	@Override
+	public void setShard(Shard shard) {
+		this.shard = shard;
 	}
 
 }

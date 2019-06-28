@@ -15,30 +15,31 @@ import java.io.IOException;
 @Component("shardManager")
 public class ShardManager {
 
-    private static Logger logger = LoggerFactory.getLogger(ShardManager.class);
+	private static Logger logger = LoggerFactory.getLogger(ShardManager.class);
 	@Autowired
 	private DBConnectionInfoMgr dbConnectionInfoMgr;
 	@Autowired
 	private DBProviderFactory dbProviderFactory;
 	@Autowired
 	private IShardAdvisor shardAdvisor;
-	@Autowired
+	//@Autowired
 	private Shard shard;
 
 
 	/**
 	 * intiatiate a DBShard and ensure activating a databaseProvider. used for
 	 * add end point.
-	 * 
+	 *
 	 * @param attributeValue
 	 * @throws IOException
 	 */
 	private void activateDbShard(Object attributeValue) {
 		DBConnectionInfo connectionInfo = shardAdvisor.getShard(attributeValue);
-	    DatabaseProvider databaseProvider = dbProviderFactory.getInstance(connectionInfo);
-	    shard.setShardId(connectionInfo.getShardId());
-	    shard.setShardLabel(connectionInfo.getShardLabel());
-	    shard.setDatabaseProvider(databaseProvider);
+		DatabaseProvider databaseProvider = dbProviderFactory.getInstance(connectionInfo);
+		shard = new Shard();
+		shard.setShardId(connectionInfo.getShardId());
+		shard.setShardLabel(connectionInfo.getShardLabel());
+		shard.setDatabaseProvider(databaseProvider);
 		logger.info("Activated shard "+connectionInfo.getShardId()+" for attribute value "+attributeValue);
 	}
 
@@ -72,16 +73,17 @@ public class ShardManager {
 	}
 
 	/**
-	 * activate a shard given a shardId from entity cache 
+	 * activate a shard given a shardId from entity cache
 	 * use this for read operation
 	 * @param shardId
 	 * @return
-	 * @throws CustomException 
+	 * @throws CustomException
 	 */
 	public void activateShard(String shardId) {
 		if (shardId != null) {
 			DBConnectionInfo connectionInfo = dbConnectionInfoMgr.getDBConnectionInfo(shardId);
 			DatabaseProvider databaseProvider = dbProviderFactory.getInstance(connectionInfo);
+			shard = new Shard();
 			shard.setShardId(shardId);
 			shard.setShardLabel(connectionInfo.getShardLabel());
 			shard.setDatabaseProvider(databaseProvider);

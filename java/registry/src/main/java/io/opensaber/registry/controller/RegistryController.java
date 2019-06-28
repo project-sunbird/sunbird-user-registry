@@ -6,6 +6,8 @@ import io.opensaber.pojos.HealthCheckResponse;
 import io.opensaber.pojos.OpenSaberInstrumentation;
 import io.opensaber.pojos.Response;
 import io.opensaber.pojos.ResponseParams;
+import io.opensaber.registry.helper.RegistryHelper;
+import io.opensaber.registry.middleware.MiddlewareHaltException;
 import io.opensaber.registry.middleware.util.Constants;
 import io.opensaber.registry.middleware.util.JSONUtil;
 import io.opensaber.registry.model.DBConnectionInfoMgr;
@@ -67,9 +69,11 @@ public class RegistryController {
 
     @Autowired
     private ShardManager shardManager;
-    
+
     @Autowired
     private ViewTemplateManager viewTemplateManager;
+    @Autowired
+    private RegistryHelper registryHelper;
 
     /**
      * Note: Only one mime type is supported at a time. Pick up the first mime
@@ -91,14 +95,16 @@ public class RegistryController {
             //shardManager.activateShard(null);
 
             watch.start("RegistryController.searchEntity");
+            //need to implement shard details
+            //searchService.setShard();
             JsonNode result = searchService.search(payload);
 
-			// applying view-templates to response
-			ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(apiMessage.getRequest().getRequestMapNode());
-			if (viewTemplate != null) {
-				ViewTransformer vTransformer = new ViewTransformer();
-				result = vTransformer.transform(viewTemplate, result);
-			}
+            // applying view-templates to response
+            ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(apiMessage.getRequest().getRequestMapNode());
+            if (viewTemplate != null) {
+                ViewTransformer vTransformer = new ViewTransformer();
+                result = vTransformer.transform(viewTemplate, result);
+            }
             // Search is tricky to support LD. Needs a revisit here.
 
             response.setResult(result);
@@ -190,7 +196,7 @@ public class RegistryController {
             Shard shard = shardManager.getShard(attribute);
 
             watch.start("RegistryController.addToExistingEntity");
-            String resultId = registryService.addEntity(jsonString);
+            String resultId = registryService.addEntity(jsonString,shard,apiMessage.getUserID());
             RecordIdentifier recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
             Map resultMap = new HashMap();
             String label = recordId.toString();
@@ -235,14 +241,15 @@ public class RegistryController {
         configurator.setIncludeTypeAttributes(requireLDResponse);
 
         try {
+            readService.setShard(shardManager.getShard(shardId));
             JsonNode resultNode = readService.getEntity(recordId.getUuid(), entityType, configurator);
-			// applying view-templates to response
-			ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(apiMessage.getRequest().getRequestMapNode());
-			
-			if (viewTemplate != null) {
-				ViewTransformer vTransformer = new ViewTransformer();
-				resultNode = vTransformer.transform(viewTemplate, resultNode);
-			}
+            // applying view-templates to response
+            ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(apiMessage.getRequest().getRequestMapNode());
+
+            if (viewTemplate != null) {
+                ViewTransformer vTransformer = new ViewTransformer();
+                resultNode = vTransformer.transform(viewTemplate, resultNode);
+            }
 
             // Transformation based on the mediaType
             Data<Object> data = new Data<>(resultNode);
@@ -278,7 +285,7 @@ public class RegistryController {
 
         try {
             watch.start("RegistryController.update");
-            registryService.updateEntity(recordId.getUuid(), jsonString);
+            registryService.updateEntity(recordId.getUuid(), jsonString, apiMessage.getUserID());
             responseParams.setErrmsg("");
             responseParams.setStatus(Response.Status.SUCCESSFUL);
             watch.stop("RegistryController.update");

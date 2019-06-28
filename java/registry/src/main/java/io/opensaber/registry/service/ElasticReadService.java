@@ -13,6 +13,7 @@ import io.opensaber.registry.exception.RecordNotFoundException;
 import io.opensaber.registry.middleware.util.Constants;
 import io.opensaber.registry.middleware.util.DateUtil;
 import io.opensaber.registry.middleware.util.JSONUtil;
+import io.opensaber.registry.sink.shard.Shard;
 import io.opensaber.registry.util.ReadConfigurator;
 
 import java.io.IOException;
@@ -80,9 +81,14 @@ public class ElasticReadService implements IReadService {
         auditInfo.setPath("/" + entityType);
         auditRecord.setAuditInfo(Arrays.asList(auditInfo));
         auditService.audit(auditRecord);
-		ObjectNode resultNode = JsonNodeFactory.instance.objectNode();
+        ObjectNode resultNode = JsonNodeFactory.instance.objectNode();
         resultNode.set(entityType, result);
         return resultNode;
+    }
+
+    @Override
+    public void setShard(Shard shard) {
+
     }
 
 }
