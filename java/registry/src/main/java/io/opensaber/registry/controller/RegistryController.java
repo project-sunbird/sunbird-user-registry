@@ -187,7 +187,7 @@ public class RegistryController {
         String entityType = apiMessage.getRequest().getEntityType();
 
         try {
-            String label = registryHelper.addEntity(apiMessage.getRequest().getRequestMapNode(),apiMessage.getUserID());
+                String label = registryHelper.addEntity(apiMessage.getRequest().getRequestMapNode(),apiMessage.getUserID());
             Map resultMap = new HashMap();
             resultMap.put(dbConnectionInfoMgr.getUuidPropertyName(), label);
 

@@ -8,11 +8,12 @@ import io.opensaber.registry.service.RegistryService;
 import io.opensaber.registry.sink.shard.Shard;
 import io.opensaber.registry.sink.shard.ShardManager;
 import io.opensaber.registry.util.RecordIdentifier;
-import io.opensaber.validators.IValidate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 
 /**
@@ -50,10 +51,10 @@ public class RegistryHelper {
         String jsonString = objectMapper.writeValueAsString(inputJson);
         try {
             logger.info("Add api: entity type and shard propery: {}", shardManager.getShardProperty());
-
-            Shard shard = shardManager.getShard(inputJson.get(entityType).get(shardManager.getShardProperty()));
+            Map<String, Object> shardIdValue = objectMapper.convertValue(inputJson.get(entityType),Map.class);
+            Shard shard = shardManager.getShard(shardIdValue.getOrDefault(shardManager.getShardProperty(),null));
             watch.start("RegistryController.addToExistingEntity");
-            String resultId = registryService.addEntity(shard, jsonString,userId);
+            String resultId = registryService.addEntity(shard,jsonString,userId);
             recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
             watch.stop("RegistryController.addToExistingEntity");
             logger.info("AddEntity,{}", resultId);
