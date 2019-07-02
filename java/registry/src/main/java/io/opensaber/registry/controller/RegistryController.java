@@ -226,7 +226,7 @@ public class RegistryController {
             ITransformer<Object> responseTransformer = transformer.getInstance(config);
             Data<Object> resultContent = responseTransformer.transform(data);
             response.setResult(resultContent.getData());
-            logger.info("ReadEntity,{}", config);
+            logger.info("ReadEntity,{},{}", config,resultNode.get(apiMessage.getRequest().getEntityType()).get(uuidPropertyName));
         } catch (Exception e) {
             logger.error("Read Api Exception occurred ", e);
             responseParams.setErrmsg(e.getMessage());

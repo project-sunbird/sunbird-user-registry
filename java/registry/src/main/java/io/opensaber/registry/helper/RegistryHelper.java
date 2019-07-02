@@ -107,7 +107,39 @@ public class RegistryHelper {
             ViewTransformer vTransformer = new ViewTransformer();
             resultNode = vTransformer.transform(viewTemplate, resultNode);
         }
-        logger.info("ReadEntity Id, {} ", recordId.toString());
+        logger.debug("readEntity ends");
+        return resultNode;
+
+    }
+
+    /**
+     * Get entity details from the DB and modifies data according to view template, requests which need only json format can call this method
+     * @param inputJson
+     * @return
+     * @throws Exception
+     */
+    public JsonNode readEntity(JsonNode inputJson) throws Exception {
+        logger.debug("readEntity starts");
+        boolean includeSignatures = false;
+        String entityType = inputJson.fields().next().getKey();
+        String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
+        RecordIdentifier recordId = RecordIdentifier.parse(label);
+        String shardId = dbConnectionInfoMgr.getShardId(recordId.getShardLabel());
+        Shard shard = shardManager.activateShard(shardId);
+        logger.info("Read Api: shard id: " + recordId.getShardLabel() + " for label: " + label);
+        JsonNode signatureNode = inputJson.get(entityType).get("includeSignatures");
+        if(null != signatureNode) {
+            includeSignatures = true;
+        }
+        ReadConfigurator configurator = ReadConfiguratorFactory.getOne(includeSignatures);
+        JsonNode resultNode =  readService.getEntity(shard, recordId.getUuid(), entityType, configurator);
+
+        ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
+
+        if (viewTemplate != null) {
+            ViewTransformer vTransformer = new ViewTransformer();
+            resultNode = vTransformer.transform(viewTemplate, resultNode);
+        }
         logger.debug("readEntity ends");
         return resultNode;
 
