@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import io.opensaber.registry.sink.shard.Shard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +21,12 @@ public interface ISearchService {
     static Logger logger = LoggerFactory.getLogger(ISearchService.class);
 
     JsonNode search(JsonNode inputQueryNode) throws IOException;
-    
+
     /**
      * Building SearchQuery from given input search json
      * @param inputQueryNode          request search json
      * @param offset                  starting point
-     * @param limit                   size of object search result hold 
+     * @param limit                   size of object search result hold
      * @return
      */
     default SearchQuery getSearchQuery(JsonNode inputQueryNode, int offset, int limit) {
@@ -76,7 +78,7 @@ public interface ISearchService {
      */
     default void addToFilterList(String path, JsonNode inputQueryNode, List<Filter> filterList) {
         Iterator<Map.Entry<String, JsonNode>> searchFields = inputQueryNode.fields();
-     
+
         // Iterate and get the fields.
         while (searchFields.hasNext()) {
             Map.Entry<String, JsonNode> entry = searchFields.next();
@@ -85,7 +87,7 @@ public interface ISearchService {
             if (entryVal.isObject() && (entryVal.fields().hasNext())) {
                 Map.Entry<String, JsonNode> entryValMap = entryVal.fields().next();
                 String operatorStr = entryValMap.getKey();
-                
+
                 if (entryValMap.getValue().isObject()) {
                     addToFilterList(entry.getKey(), entryVal, filterList);
                 } else {
@@ -105,18 +107,18 @@ public interface ISearchService {
                     filterList.add(filter);
                 }
             } else {
-                 throw new IllegalArgumentException("Search query is invalid!");
+                throw new IllegalArgumentException("Search query is invalid!");
             }
         }
     }
     /**
      * Return all values
-     * 
+     *
      * @param node
      * @return
      */
     default List<Object> getObjects(JsonNode node) {
-            
+
         List<Object> rangeValues = new ArrayList<>();
         for (int i = 0; i < node.size(); i++) {
             JsonNode entryVal = node.get(i);
@@ -125,7 +127,5 @@ public interface ISearchService {
         }
         return rangeValues;
     }
-
-
 
 }
