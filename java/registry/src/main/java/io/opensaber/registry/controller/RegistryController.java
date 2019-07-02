@@ -21,8 +21,6 @@ import io.opensaber.registry.transform.ConfigurationHelper;
 import io.opensaber.registry.transform.Data;
 import io.opensaber.registry.transform.ITransformer;
 import io.opensaber.registry.transform.Transformer;
-import io.opensaber.registry.util.ReadConfigurator;
-import io.opensaber.registry.util.ReadConfiguratorFactory;
 import io.opensaber.registry.util.RecordIdentifier;
 import io.opensaber.registry.util.ViewTemplateManager;
 import io.opensaber.views.ViewTemplate;
@@ -217,28 +215,9 @@ public class RegistryController {
 
         ResponseParams responseParams = new ResponseParams();
         Response response = new Response(Response.API_ID.READ, "OK", responseParams);
-        String entityType = apiMessage.getRequest().getEntityType();
-        String label = apiMessage.getRequest().getRequestMapNode().get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
-        RecordIdentifier recordId = RecordIdentifier.parse(label);
-        String shardId = dbConnectionInfoMgr.getShardId(recordId.getShardLabel());
-        Shard shard = shardManager.activateShard(shardId);
-        logger.info("Read Api: shard id: " + recordId.getShardLabel() + " for label: " + label);
-
-        boolean includeSignatures = (boolean) apiMessage.getRequest().getRequestMap().getOrDefault("includeSignatures",
-                false);
-        ReadConfigurator configurator = ReadConfiguratorFactory.getOne(includeSignatures);
-        configurator.setIncludeTypeAttributes(requireLDResponse);
-
+        JsonNode inputJson = apiMessage.getRequest().getRequestMapNode();
         try {
-            JsonNode resultNode = readService.getEntity(shard,recordId.getUuid(), entityType, configurator);
-            // applying view-templates to response
-            ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(apiMessage.getRequest().getRequestMapNode());
-
-            if (viewTemplate != null) {
-                ViewTransformer vTransformer = new ViewTransformer();
-                resultNode = vTransformer.transform(viewTemplate, resultNode);
-            }
-
+            JsonNode resultNode = registryHelper.readEntity(inputJson,requireLDResponse);
             // Transformation based on the mediaType
             Data<Object> data = new Data<>(resultNode);
             Configuration config = configurationHelper.getResponseConfiguration(requireLDResponse);
@@ -246,7 +225,7 @@ public class RegistryController {
             ITransformer<Object> responseTransformer = transformer.getInstance(config);
             Data<Object> resultContent = responseTransformer.transform(data);
             response.setResult(resultContent.getData());
-            logger.info("ReadEntity,{},{}", recordId.toString(), config);
+            logger.info("ReadEntity,{}", config);
         } catch (Exception e) {
             logger.error("Read Api Exception occurred ", e);
             responseParams.setErrmsg(e.getMessage());

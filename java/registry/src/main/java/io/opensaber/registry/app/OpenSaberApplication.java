@@ -28,7 +28,13 @@ public class OpenSaberApplication {
 		context = application.run(args);
 	}
 
-	public static ApplicationContext getContext() {
+
+	/** This method return non-web application context
+	 * @return context
+	 */
+	public static ApplicationContext getAppContext() {
+		String[] inputArgs = {WebApplicationType.NONE.toString()};
+		OpenSaberApplication.main(inputArgs);
 		return context;
 	}
 
