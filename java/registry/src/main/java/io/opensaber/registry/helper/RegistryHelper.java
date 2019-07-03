@@ -63,8 +63,8 @@ public class RegistryHelper {
         String jsonString = objectMapper.writeValueAsString(inputJson);
         try {
             logger.info("Add api: entity type and shard propery: {}", shardManager.getShardProperty());
-            Map<String, Object> shardIdValue = objectMapper.convertValue(inputJson.get(entityType),Map.class);
-            Shard shard = shardManager.getShard(shardIdValue.getOrDefault(shardManager.getShardProperty(),null));
+            Map<String, Object> inputMap = objectMapper.convertValue(inputJson.get(entityType),Map.class);
+            Shard shard = shardManager.getShard(inputMap.getOrDefault(shardManager.getShardProperty(),null));
             watch.start("RegistryController.addToExistingEntity");
             String resultId = registryService.addEntity(shard,jsonString,userId);
             recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
@@ -119,30 +119,7 @@ public class RegistryHelper {
      * @throws Exception
      */
     public JsonNode readEntity(JsonNode inputJson) throws Exception {
-        logger.debug("readEntity starts");
-        boolean includeSignatures = false;
-        String entityType = inputJson.fields().next().getKey();
-        String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
-        RecordIdentifier recordId = RecordIdentifier.parse(label);
-        String shardId = dbConnectionInfoMgr.getShardId(recordId.getShardLabel());
-        Shard shard = shardManager.activateShard(shardId);
-        logger.info("Read Api: shard id: " + recordId.getShardLabel() + " for label: " + label);
-        JsonNode signatureNode = inputJson.get(entityType).get("includeSignatures");
-        if(null != signatureNode) {
-            includeSignatures = true;
-        }
-        ReadConfigurator configurator = ReadConfiguratorFactory.getOne(includeSignatures);
-        JsonNode resultNode =  readService.getEntity(shard, recordId.getUuid(), entityType, configurator);
-
-        ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
-
-        if (viewTemplate != null) {
-            ViewTransformer vTransformer = new ViewTransformer();
-            resultNode = vTransformer.transform(viewTemplate, resultNode);
-        }
-        logger.debug("readEntity ends");
-        return resultNode;
-
+        return readEntity(inputJson,false);
     }
 }
 

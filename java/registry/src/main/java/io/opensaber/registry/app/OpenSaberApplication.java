@@ -19,7 +19,6 @@ public class OpenSaberApplication {
 	private static SpringApplication application = new SpringApplication(OpenSaberApplication.class);
 
 	public static void main(String[] args) {
-		application.setWebApplicationType(WebApplicationType.SERVLET);
 		context = application.run(args);
 	}
 

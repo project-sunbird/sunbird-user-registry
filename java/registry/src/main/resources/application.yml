@@ -65,25 +65,25 @@ database:
   # implement IShardAdvisor interface in your own ways. An example, SerialNumShardAdvisor
   # has been provided for reference. If you'd like to use it, set value "serialNum" here.
   # Note that "serialNum" must then be part of the payload.
-  shardProperty: ${database_shardProperty:none}
+  shardProperty: ${database_shardProperty:status}
 
   # This property is instruction to use the shard advisor.
   # Values could be io.opensaber.registry.sink.shard.DefaultShardAdvisor, OR
   # io.opensaber.registry.sink.shard.SerialNumberShardAdvisor OR
   # absolute class name of your advisor class.
   # If this property not provided, advisor is set to DefaultShardAdvisor
-  shardAdvisorClassName: io.opensaber.registry.sink.shard.DefaultShardAdvisor
+  shardAdvisorClassName: io.opensaber.registry.sink.shard.SerialNumberShardAdvisor
 
   connectionInfo:
     -
       # shardId, shardlabel must be a unique identifier to each connection.
-      shardId: shard1
+      shardId: ${database_connectionInfo_0_shardId:shard1}
 
       # shardLabel is used as prefix for a uuid. Could be any alpha numeric string
       # Example of a record identifier: 1-60f76147-0acd-4dff-b75a-2d811787d04d
       # Note '1' is the label used for record identifier
       # shardLabel is not stored in the database
-      shardLabel: 1
+      shardLabel: ${database_connectionInfo_0_shardLabel:1}
 
       # The format of the URI can be learnt from the following links -
       #     * 1. Graph database (Neo4J)
@@ -96,18 +96,17 @@ database:
       #     ** Example - cassandra - jdbc:cassandra://localhost:9160/yourdb
       #     * 4 Cassandra
       #     ** Example - cassandra - 127.0.0.1:9042
-      uri: ${connectionInfo_uri:jdbc:postgresql://localhost:5432/perfbench5}
-
-      username: ${connectionInfo_username:postgres}
-      password: ${connectionInfo_password:postgres}
+      uri: ${database_connectionInfo_0_uri:jdbc:postgresql://localhost:5432/perfbench3}
+      username: ${database_connectionInfo_0_username:postgres}
+      password: ${database_connectionInfo_0_password:postgres}
 
       # Any other shard information follows...
-    #-
-      #shardId: shard2
-      #shardLabel: 2
-      #uri: ${connectionInfo_uri:jdbc:postgresql://localhost:5432/yourdb}
-      #username: ${connectionInfo_username:postgres}
-      #password: ${connectionInfo_password:postgres}
+    -
+      shardId: ${database_connectionInfo_1_shardId:shard2}
+      shardLabel: ${database_connectionInfo_1_shardLabel:2}
+      uri: ${database_connectionInfo_1_uri:jdbc:postgresql://localhost:5432/perfbench4}
+      username: ${database_connectionInfo_1_username:postgres}
+      password: ${database_connectionInfo_1_password:postgres}
 
 ##################################################################################
 # Uncomment the following section to use Cassandra as backend store              #
