@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "UserFieldStatus": {
+      "$ref": "#/definitions/UserFieldStatus"
+    }
+  },
+  "required": [
+    "userFieldStatus"
+  ],
+  "title":"UserFieldStatus",
+  "definitions": {
+    "UserFieldStatus": {
+      "type": "object",
+      "title": "The UserFieldStatus Schema",
+      "required": [
+        "loginId"
+      ],
+      "properties": {
+        "currentLoginTime": {
+          "type": "string",
+          "title": "Current login time"
+        },
+        "emailVerified": {
+          "type": "boolean",
+          "title": "Email Verified"
+        },
+        "lastLoginTime": {
+          "type": "string",
+          "title": "Last login time"
+        },
+        "tncAcceptedOn": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Terms and Conditions Accepted on"
+        },
+        "tncAcceptedVersion": {
+          "type": "string",
+          "title": "Terms and Conditions Accepted Version"
+        },
+        "loginId": {
+          "type": "string",
+          "title": "Login ID"
+        },
+        "phoneVerified": {
+          "type": "boolean",
+          "title": "Phone Verified"
+        },
+        "webpages": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "_osConfig": {
+    "osComment": ["This section contains the OpenSABER specific configuration information",
+      "privateFields: Optional; list of field names to be encrypted and stored in database",
+      "signedFields: Optional; list of field names that must be pre-signed",
+      "indexFields: Optional; list of field names used for creating index. Enclose within braces to indicate it is a composite index. In this definition, (serialNum, teacherCode) is a composite index and teacherName is a single column index.",
+      "uniqueIndexFields: Optional; list of field names used for creating unique index. Field names must be different from index field name",
+      "systemFields: Optional; list of fields names used for system standard information like created, updated timestamps and userid"],
+
+    "privateFields": [],
+    "signedFields": [],
+    "indexFields": ["loginId"],
+    "uniqueIndexFields": ["loginId"],
+    "systemFields": ["createdOn", "updatedAt", "createdBy", "updatedBy"]
+  }
+}
