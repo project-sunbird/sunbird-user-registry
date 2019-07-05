@@ -16,19 +16,18 @@ import org.springframework.web.filter.CorsFilter;
 @ComponentScan(basePackages = { "io.opensaber.registry", "io.opensaber.pojos"})
 public class OpenSaberApplication {
 	private static ApplicationContext context;
+	private static SpringApplication application = new SpringApplication(OpenSaberApplication.class);
 
 	public static void main(String[] args) {
-		SpringApplication application = new SpringApplication(OpenSaberApplication.class);
-		if(args.length != 0 && args[0].equals(WebApplicationType.NONE.toString())){
-			application.setWebApplicationType(WebApplicationType.NONE);
-		} else {
-			application.setWebApplicationType(WebApplicationType.SERVLET);
-		}
-
 		context = application.run(args);
 	}
 
-	public static ApplicationContext getContext() {
+	/** This method return non-web application context
+	 * @return context
+	 */
+	public static ApplicationContext getAppContext() {
+		application.setWebApplicationType(WebApplicationType.NONE);
+		context = application.run();
 		return context;
 	}
 

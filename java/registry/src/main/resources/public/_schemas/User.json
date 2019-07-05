@@ -18,7 +18,6 @@
       "required": [
         "channel",
         "email",
-        "loginId",
         "status",
         "userName",
         "phone"
@@ -36,10 +35,6 @@
           "type": "string",
           "title": "Country code of user"
         },
-        "currentLoginTime": {
-          "type": "string",
-          "title": "Current login time"
-        },
         "dob": {
           "type": "string",
           "title": "Date of birth"
@@ -47,10 +42,6 @@
         "email": {
           "type": "string",
           "title": "Email id"
-        },
-        "emailVerified": {
-          "type": "boolean",
-          "title": "Email Verified"
         },
         "firstName": {
           "type": "string",
@@ -68,10 +59,6 @@
           "type": "boolean",
           "title": "User is deleted"
         },
-        "lastLoginTime": {
-          "type": "string",
-          "title": "Last login time"
-        },
         "locationIds": {
           "items": {
             "type": "string"
@@ -82,10 +69,6 @@
           "type": "string",
           "title": "Phone number"
         },
-        "phoneVerified": {
-          "type": "boolean",
-          "title": "Phone Verified"
-        },
         "rootOrgId": {
           "type": "string",
           "title": "Root organisation ID"
@@ -93,19 +76,6 @@
         "status": {
           "type": "integer",
           "title": "Status"
-        },
-        "tncAcceptedOn": {
-          "type": "string",
-          "format": "date-time",
-          "title": "Terms and Conditions Accepted on"
-        },
-        "tncAcceptedVersion": {
-          "type": "string",
-          "title": "Terms and Conditions Accepted Version"
-        },
-        "loginId": {
-          "type": "string",
-          "title": "Login ID"
         },
         "userName": {
           "type": "string",
@@ -151,6 +121,9 @@
               "title": "Subject"
             }
           }
+        },
+        "userFieldStatus": {
+          "$ref": "UserFieldStatus.json#/definitions/UserFieldStatus"
         }
       }
     }
@@ -163,10 +136,10 @@
       "uniqueIndexFields: Optional; list of field names used for creating unique index. Field names must be different from index field name",
       "systemFields: Optional; list of fields names used for system standard information like created, updated timestamps and userid"],
 
-    "privateFields": ["phone", "email", "loginId", "userName", "status"],
+    "privateFields": ["phone", "email", "userName", "status", "loginId"],
     "signedFields": [],
-    "indexFields": ["email","loginId","status","userName","phone"],
-    "uniqueIndexFields": ["loginId","email","phone"],
+    "indexFields": ["email","status","userName","phone","loginId"],
+    "uniqueIndexFields": ["email","phone","loginId"],
     "systemFields": ["createdAt", "updatedAt", "createdBy", "updatedBy"]
   }
 }
