@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.opensaber.pojos.OpenSaberInstrumentation;
 import io.opensaber.registry.model.DBConnectionInfoMgr;
 import io.opensaber.registry.service.IReadService;
+import io.opensaber.registry.service.ISearchService;
 import io.opensaber.registry.service.RegistryService;
 import io.opensaber.registry.sink.shard.Shard;
 import io.opensaber.registry.sink.shard.ShardManager;
@@ -38,6 +39,9 @@ public class RegistryHelper {
 
     @Autowired
     IReadService readService;
+
+    @Autowired
+    private ISearchService searchService;
 
     @Autowired
     private ViewTemplateManager viewTemplateManager;
@@ -120,5 +124,43 @@ public class RegistryHelper {
     public JsonNode readEntity(JsonNode inputJson) throws Exception {
         return readEntity(inputJson,false);
     }
+
+    /** Search the input in the configured backend, external api's can use this method for searching
+     * @param inputJson
+     * @return
+     * @throws Exception
+     */
+    public JsonNode searchEntity(JsonNode inputJson) throws Exception {
+        logger.debug("searchEntity starts");
+        JsonNode resultNode = searchService.search(inputJson);
+        ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
+        if (viewTemplate != null) {
+            ViewTransformer vTransformer = new ViewTransformer();
+            resultNode = vTransformer.transform(viewTemplate, resultNode);
+        }
+        // Search is tricky to support LD. Needs a revisit here.
+        logger.debug("searchEntity ends");
+        return resultNode;
+    }
+
+    /** Updates the input entity, external api's can use this method to update the entity
+     * @param inputJson
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    public String updateEntity(JsonNode inputJson, String userId) throws Exception {
+        logger.debug("updateEntity starts");
+        String entityType = inputJson.fields().next().getKey();
+        String jsonString = objectMapper.writeValueAsString(inputJson);
+        Shard shard = shardManager.getShard(inputJson.get(entityType).get(shardManager.getShardProperty()));
+        String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
+        RecordIdentifier recordId = RecordIdentifier.parse(label);
+        logger.info("Update Api: shard id: " + recordId.getShardLabel() + " for uuid: " + recordId.getUuid());
+        registryService.updateEntity(shard, recordId.getUuid(), jsonString, userId);
+        logger.debug("updateEntity ends");
+        return "SUCCESS";
+    }
+
 }
 

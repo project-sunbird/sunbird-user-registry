@@ -92,15 +92,7 @@ public class RegistryController {
         try {
 
             watch.start("RegistryController.searchEntity");
-            JsonNode result = searchService.search(payload);
-
-            // applying view-templates to response
-            ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(apiMessage.getRequest().getRequestMapNode());
-            if (viewTemplate != null) {
-                ViewTransformer vTransformer = new ViewTransformer();
-                result = vTransformer.transform(viewTemplate, result);
-            }
-            // Search is tricky to support LD. Needs a revisit here.
+            JsonNode result = registryHelper.searchEntity(payload);
 
             response.setResult(result);
             responseParams.setStatus(Response.Status.SUCCESSFUL);
@@ -242,22 +234,13 @@ public class RegistryController {
         ResponseParams responseParams = new ResponseParams();
         Response response = new Response(Response.API_ID.UPDATE, "OK", responseParams);
 
-        String jsonString = apiMessage.getRequest().getRequestMapAsString();
-        String entityType = apiMessage.getRequest().getEntityType();
-
-        String label = apiMessage.getRequest().getRequestMapNode().get(entityType).get(uuidPropertyName).asText();
-        RecordIdentifier recordId = RecordIdentifier.parse(label);
-        String shardId = dbConnectionInfoMgr.getShardId(recordId.getShardLabel());
-        Shard shard = shardManager.activateShard(shardId);
-        logger.info("Update Api: shard id: " + recordId.getShardLabel() + " for uuid: " + recordId.getUuid());
-
+        JsonNode inputJson = apiMessage.getRequest().getRequestMapNode();
         try {
             watch.start("RegistryController.update");
-            registryService.updateEntity(shard, recordId.getUuid(), jsonString, apiMessage.getUserID());
+            registryHelper.updateEntity(inputJson,apiMessage.getUserID());
             responseParams.setErrmsg("");
             responseParams.setStatus(Response.Status.SUCCESSFUL);
             watch.stop("RegistryController.update");
-            logger.info("UpdateEntity,{}", recordId.toString());
         } catch (Exception e) {
             logger.error("RegistryController: Exception while updating entity (without id)!", e);
             responseParams.setStatus(Response.Status.UNSUCCESSFUL);
