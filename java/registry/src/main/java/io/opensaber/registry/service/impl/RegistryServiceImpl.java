@@ -166,21 +166,21 @@ public class RegistryServiceImpl implements RegistryService {
      * @return
      * @throws Exception
      */
-    public String addEntity(Shard shard, String jsonString, String userId) throws Exception {
+    public String addEntity(Shard shard, JsonNode inputJson, String userId) throws Exception {
         Transaction tx = null;
         String entityId = "entityPlaceholderId";
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(jsonString);
-        String vertexLabel = rootNode.fieldNames().next();
+        //JsonNode rootNode = mapper.readTree(jsonString);
+        String vertexLabel = inputJson.fieldNames().next();
 
-        systemFieldsHelper.ensureCreateAuditFields(vertexLabel, rootNode.get(vertexLabel), userId);
+        systemFieldsHelper.ensureCreateAuditFields(vertexLabel, inputJson.get(vertexLabel), userId);
 
         if (encryptionEnabled) {
-            rootNode = encryptionHelper.getEncryptedJson(rootNode);
+            inputJson = encryptionHelper.getEncryptedJson(inputJson);
         }
 
         if (signatureEnabled) {
-            signatureHelper.signJson(rootNode);
+            signatureHelper.signJson(inputJson);
         }
 
         if (persistenceEnabled) {
@@ -189,7 +189,7 @@ public class RegistryServiceImpl implements RegistryService {
             try (OSGraph osGraph = dbProvider.getOSGraph()) {
                 Graph graph = osGraph.getGraphStore();
                 tx = dbProvider.startTransaction(graph);
-                entityId = registryDao.addEntity(graph, rootNode);
+                entityId = registryDao.addEntity(graph, inputJson);
                 if (commitEnabled) {
                     dbProvider.commitTransaction(graph, tx);
                 }
@@ -202,7 +202,7 @@ public class RegistryServiceImpl implements RegistryService {
             Definition definition = definitionsManager.getDefinition(vertexLabel);
             entityParenter.ensureIndexExists(dbProvider, parentVertex, definition, shardId);
 
-            callAuditESActors(null,rootNode,"add", Constants.AUDIT_ACTION_ADD,entityId,vertexLabel,entityId,tx);
+            callAuditESActors(null,inputJson,"add", Constants.AUDIT_ACTION_ADD,entityId,vertexLabel,entityId,tx);
 
         }
         return entityId;
