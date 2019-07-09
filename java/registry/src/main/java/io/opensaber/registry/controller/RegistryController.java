@@ -175,12 +175,12 @@ public class RegistryController {
         Response response = new Response(Response.API_ID.CREATE, "OK", responseParams);
         Map<String, Object> result = new HashMap<>();
         String entityType = apiMessage.getRequest().getEntityType();
-        JsonNode inputJson = apiMessage.getRequest().getRequestMapNode();
+        JsonNode rootNode = apiMessage.getRequest().getRequestMapNode();
 
         try {
-            Shard shard = shardManager.getShard(inputJson.get(entityType).get(shardManager.getShardProperty()));
-            JsonNode resultNode = registryHelper.addEntity(inputJson, apiMessage.getUserID());
-            String resultId = resultNode.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
+            Shard shard = shardManager.getShard(rootNode.get(entityType).get(shardManager.getShardProperty()));
+            registryHelper.addEntity(rootNode, apiMessage.getUserID());
+            String resultId = rootNode.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
             RecordIdentifier recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
 
             Map resultMap = new HashMap();

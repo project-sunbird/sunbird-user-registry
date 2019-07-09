@@ -68,6 +68,6 @@
     "signedFields": [],
     "indexFields": ["userId"],
     "uniqueIndexFields": [],
-    "systemFields": ["updatedAt", "updatedBy"]
+    "systemFields": ["osCreatedAt", "osUpdatedAt", "osCreatedBy", "osUpdatedBy"]
   }
 }

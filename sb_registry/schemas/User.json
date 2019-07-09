@@ -140,6 +140,6 @@
     "signedFields": [],
     "indexFields": ["email","status","userName","phone"],
     "uniqueIndexFields": ["email","phone"],
-    "systemFields": ["createdAt", "updatedAt", "createdBy", "updatedBy"]
+    "systemFields": ["osCreatedAt", "osUpdatedAt", "osCreatedBy", "osUpdatedBy"]
   }
 }
