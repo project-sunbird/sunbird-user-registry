@@ -9,9 +9,6 @@ cp sb_registry/schemas/* java/registry/src/main/resources/public/_schemas/
 echo "Copying sample from sb_registry to resources"
 cp sb_registry/application.yml.sample java/registry/src/main/resources/application.yml.sample
 
-echo "Take a backup of existing yml, if it exists"
-cp java/registry/src/main/resources/application.yml java/registry/src/main/resources/application.yml.old 2> /dev/null
-
 echo "Copy the sample config as main application config"
 cp java/registry/src/main/resources/application.yml.sample java/registry/src/main/resources/application.yml
 
