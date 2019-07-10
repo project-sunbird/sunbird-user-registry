@@ -8,7 +8,7 @@ public interface RegistryService {
 
 	HealthCheckResponse health(Shard shard) throws Exception;
 
-	void deleteEntityById(Shard shard, String id) throws Exception;
+	void deleteEntityById(Shard shard, String id, String userId) throws Exception;
 
 	String addEntity(Shard shard, JsonNode inputJson, String userId) throws Exception;
 

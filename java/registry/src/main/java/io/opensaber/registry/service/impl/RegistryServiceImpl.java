@@ -139,7 +139,7 @@ public class RegistryServiceImpl implements RegistryService {
      * @throws Exception
      */
     @Override
-    public void deleteEntityById(Shard shard, String uuid) throws Exception {
+    public void deleteEntityById(Shard shard, String uuid, String userId) throws Exception {
         DatabaseProvider databaseProvider = shard.getDatabaseProvider();
         IRegistryDao registryDao = new RegistryDaoImpl(databaseProvider, definitionsManager, uuidPropertyName);
         try (OSGraph osGraph = databaseProvider.getOSGraph()) {
@@ -153,7 +153,7 @@ public class RegistryServiceImpl implements RegistryService {
                 registryDao.deleteEntity(vertex);
                 databaseProvider.commitTransaction(graph, tx);
                 String index = vertex.property(Constants.TYPE_STR_JSON_LD).isPresent() ? (String) vertex.property(Constants.TYPE_STR_JSON_LD).value() : null;
-                callAuditESActors(null,null,"delete", Constants.AUDIT_ACTION_DELETE,uuid,index,uuid,tx);
+                callAuditESActors(null,null,"delete", Constants.AUDIT_ACTION_DELETE,uuid,index,uuid,userId,tx);
             }
             logger.info("Entity {} marked deleted", uuid);
         }
@@ -200,7 +200,7 @@ public class RegistryServiceImpl implements RegistryService {
             Definition definition = definitionsManager.getDefinition(vertexLabel);
             entityParenter.ensureIndexExists(dbProvider, parentVertex, definition, shardId);
 
-            callAuditESActors(null,rootNode,"add", Constants.AUDIT_ACTION_ADD,entityId,vertexLabel,entityId,tx);
+            callAuditESActors(null,rootNode,"add", Constants.AUDIT_ACTION_ADD,entityId,vertexLabel,entityId,userId,tx);
 
         }
         return entityId;
@@ -283,18 +283,17 @@ public class RegistryServiceImpl implements RegistryService {
 
             databaseProvider.commitTransaction(graph, tx);
             // elastic-search and audit akka calls starts here
-            callAuditESActors(readNode,mergedNode,"update",Constants.AUDIT_ACTION_UPDATE,id,entityType,rootId,tx);
+            callAuditESActors(readNode,mergedNode,"update",Constants.AUDIT_ACTION_UPDATE,id,entityType,rootId,userId,tx);
         }
     }
 
     @Async("auditExecutor")
     public void callAuditESActors(JsonNode readNode, JsonNode mergedNode, String operation, String auditAction, String id,
-                                  String parentEntityType, String entityRootId, Transaction tx) throws JsonProcessingException {
+                                  String parentEntityType, String entityRootId, String userId, Transaction tx) throws JsonProcessingException {
         logger.debug("callAuditESActors started");
         List<AuditInfo> auditItemDetails = null;
         auditRecord = new AuditRecord();
-        //need to work later
-        auditRecord.setUserId("UserID").setAction(auditAction)
+        auditRecord.setUserId(userId).setAction(auditAction)
                 .setTransactionId(new LinkedList<>(Arrays.asList(tx.hashCode()))).setRecordId(id).
                 setAuditId(UUID.randomUUID().toString()).setTimeStamp(DateUtil.getTimeStamp());
         JsonNode differenceJson = JSONUtil.diffJsonNode(readNode, mergedNode);

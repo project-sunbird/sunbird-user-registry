@@ -45,9 +45,6 @@ public class NativeReadService implements IReadService {
 	@Autowired
 	private IAuditService auditService;
 
-	@Autowired
-	private APIMessage apiMessage;
-
 	@Value("${database.uuidPropertyName}")
 	public String uuidPropertyName;
 
@@ -61,7 +58,7 @@ public class NativeReadService implements IReadService {
 	 * @throws Exception
 	 */
 	@Override
-	public JsonNode getEntity(Shard shard, String id, String entityType, ReadConfigurator configurator) throws Exception {
+	public JsonNode getEntity(Shard shard, String id, String entityType, String userId, ReadConfigurator configurator) throws Exception {
 		AuditRecord auditRecord = null;
 		DatabaseProvider dbProvider = shard.getDatabaseProvider();
 		IRegistryDao registryDao = new RegistryDaoImpl(dbProvider, definitionsManager, uuidPropertyName);
@@ -78,7 +75,7 @@ public class NativeReadService implements IReadService {
 
 			dbProvider.commitTransaction(graph, tx);
 			auditRecord =  new AuditRecord();
-			auditRecord.setUserId(apiMessage.getUserID()).setAction(Constants.AUDIT_ACTION_READ).setRecordId(id).setTransactionId(new LinkedList<>(Arrays.asList(tx.hashCode())))
+			auditRecord.setUserId(userId).setAction(Constants.AUDIT_ACTION_READ).setRecordId(id).setTransactionId(new LinkedList<>(Arrays.asList(tx.hashCode())))
 					.setAuditId(UUID.randomUUID().toString()).setTimeStamp(DateUtil.getTimeStamp());
 			AuditInfo auditInfo = new AuditInfo();
 			auditInfo.setOp(Constants.AUDIT_ACTION_READ_OP);

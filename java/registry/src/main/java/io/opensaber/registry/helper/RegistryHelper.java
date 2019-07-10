@@ -86,7 +86,7 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public JsonNode readEntity(JsonNode inputJson, boolean requireLDResponse) throws Exception {
+    public JsonNode readEntity(JsonNode inputJson, String userId, boolean requireLDResponse) throws Exception {
         logger.debug("readEntity starts");
         boolean includeSignatures = false;
         String entityType = inputJson.fields().next().getKey();
@@ -101,7 +101,7 @@ public class RegistryHelper {
         }
         ReadConfigurator configurator = ReadConfiguratorFactory.getOne(includeSignatures);
         configurator.setIncludeTypeAttributes(requireLDResponse);
-        JsonNode resultNode =  readService.getEntity(shard, recordId.getUuid(), entityType, configurator);
+        JsonNode resultNode =  readService.getEntity(shard, recordId.getUuid(), entityType, userId, configurator);
 
         ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
 
@@ -120,8 +120,8 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public JsonNode readEntity(JsonNode inputJson) throws Exception {
-        return readEntity(inputJson,false);
+    public JsonNode readEntity(JsonNode inputJson,String userId) throws Exception {
+        return readEntity(inputJson,userId,false);
     }
 
     /** Search the input in the configured backend, external api's can use this method for searching
