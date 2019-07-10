@@ -175,10 +175,10 @@ public class RegistryController {
         Response response = new Response(Response.API_ID.CREATE, "OK", responseParams);
         Map<String, Object> result = new HashMap<>();
         String entityType = apiMessage.getRequest().getEntityType();
+        JsonNode rootNode = apiMessage.getRequest().getRequestMapNode();
 
         try {
-
-            String label = registryHelper.addEntity(apiMessage.getRequest().getRequestMapNode(),apiMessage.getUserID());
+            String label = registryHelper.addEntity(rootNode, apiMessage.getUserID());
             Map resultMap = new HashMap();
             resultMap.put(dbConnectionInfoMgr.getUuidPropertyName(), label);
 
@@ -186,7 +186,6 @@ public class RegistryController {
             response.setResult(result);
             responseParams.setStatus(Response.Status.SUCCESSFUL);
             watch.stop("RegistryController.addToExistingEntity");
-            logger.info("AddEntity,{}", label);
         } catch (Exception e) {
             logger.error("Exception in controller while adding entity !", e);
             response.setResult(result);
