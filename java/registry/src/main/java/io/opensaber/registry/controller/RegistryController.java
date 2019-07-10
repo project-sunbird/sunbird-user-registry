@@ -186,7 +186,6 @@ public class RegistryController {
             response.setResult(result);
             responseParams.setStatus(Response.Status.SUCCESSFUL);
             watch.stop("RegistryController.addToExistingEntity");
-            logger.info("AddEntity,{}", label);
         } catch (Exception e) {
             logger.error("Exception in controller while adding entity !", e);
             response.setResult(result);
