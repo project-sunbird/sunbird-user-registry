@@ -57,24 +57,26 @@ public class RegistryHelper {
 
     /**
      * calls validation and then persists the record to registry.
-     * @param inputJson
+     * @param rootNode
      * @return
      * @throws Exception
      */
-    public JsonNode addEntity(JsonNode rootNode, String userId) throws Exception {
+    public String addEntity(JsonNode rootNode, String userId) throws Exception {
+        RecordIdentifier recordId = null;
         String entityType = rootNode.fields().next().getKey();
         try {
             logger.info("Add api: entity type and shard propery: {}", shardManager.getShardProperty());
             Shard shard = shardManager.getShard(rootNode.get(entityType).get(shardManager.getShardProperty()));
             watch.start("RegistryController.addToExistingEntity");
             String resultId = registryService.addEntity(shard,rootNode,userId);
+            recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
             watch.stop("RegistryController.addToExistingEntity");
-            logger.info("AddEntity,{}", resultId);
+            logger.info("AddEntity,{}", recordId.toString());
         } catch (Exception e) {
             logger.error("Exception in controller while adding entity !", e);
             throw new Exception(e);
         }
-        return rootNode;
+        return recordId.toString();
     }
 
     /**

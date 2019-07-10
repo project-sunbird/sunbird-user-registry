@@ -178,19 +178,15 @@ public class RegistryController {
         JsonNode rootNode = apiMessage.getRequest().getRequestMapNode();
 
         try {
-            Shard shard = shardManager.getShard(rootNode.get(entityType).get(shardManager.getShardProperty()));
-            registryHelper.addEntity(rootNode, apiMessage.getUserID());
-            String resultId = rootNode.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
-            RecordIdentifier recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
-
+            String resultId = registryHelper.addEntity(rootNode, apiMessage.getUserID());
             Map resultMap = new HashMap();
-            resultMap.put(dbConnectionInfoMgr.getUuidPropertyName(), recordId.toString());
+            resultMap.put(dbConnectionInfoMgr.getUuidPropertyName(), resultId);
 
             result.put(entityType, resultMap);
             response.setResult(result);
             responseParams.setStatus(Response.Status.SUCCESSFUL);
             watch.stop("RegistryController.addToExistingEntity");
-            logger.info("AddEntity,{}", recordId.toString());
+            logger.info("AddEntity,{}", resultId);
         } catch (Exception e) {
             logger.error("Exception in controller while adding entity !", e);
             response.setResult(result);
