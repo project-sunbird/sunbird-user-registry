@@ -162,15 +162,13 @@ public class RegistryServiceImpl implements RegistryService {
     /**
      * This method adds the entity into db, calls elastic and audit asynchronously
      *
-     * @param jsonString - input value as string
+     * @param rootNode - input value as string
      * @return
      * @throws Exception
      */
-    public String addEntity(Shard shard, String jsonString, String userId) throws Exception {
+    public String addEntity(Shard shard, JsonNode rootNode, String userId) throws Exception {
         Transaction tx = null;
         String entityId = "entityPlaceholderId";
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(jsonString);
         String vertexLabel = rootNode.fieldNames().next();
 
         systemFieldsHelper.ensureCreateAuditFields(vertexLabel, rootNode.get(vertexLabel), userId);
