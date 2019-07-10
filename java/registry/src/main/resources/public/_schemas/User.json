@@ -138,8 +138,8 @@
 
     "privateFields": ["phone", "email", "userName", "status", "loginId"],
     "signedFields": [],
-    "indexFields": ["email","status","userName","phone","loginId"],
-    "uniqueIndexFields": ["email","phone","loginId"],
+    "indexFields": ["email","status","userName","phone"],
+    "uniqueIndexFields": ["email","phone"],
     "systemFields": ["createdAt", "updatedAt", "createdBy", "updatedBy"]
   }
 }

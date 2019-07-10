@@ -37,7 +37,7 @@
           "title": "Grade"
         },
         "isDeleted": {
-          "type": "string",
+          "type": "boolean",
           "title": "Is Deleted"
         },
         "name": {

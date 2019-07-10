@@ -1,17 +1,19 @@
 # sunbird-user-registry
-Opensaber implementation for Sunbird
+This is a copy of OpenSABER maintained [here](https://github.com/project-sunbird/open-saber) with additional schemas 
+pertaining to Sunbird user-org service. This is maintained by Sunbird user-org team.
 
-Configration changes regarding opensaber for Sunbird:
+## Building this repo
 
-Crated sunbird-user-registry service on the base of open-saber(https://github.com/project-sunbird/open-saber) with branch release-2.0.3
+### 1. Run dependency resolver 
+Copies/Overwrites the user related json schema files and application configuration from the sb_registry folder. Additionally, 
+takes a backup of the existing application.yml.  
 
-Run sb-registry-configure-dependencies.sh file which copies User related json schemas and application.yml configuration and replaces the exisiting configuration files.
+> ./sb-registry-configure-dependencies.sh 
 
-Go to java folder path and run "mvn clean install" in the terminal, it gives registry executable jar.
-
-Run the registry jar with "java -jar registry-2.0.3.jar".
-
-Start using the sunbird-user-registry with user related schemas, organisation related schemas will be added soon.
-
+### 2. Go to java folder and build
+> mvn clean install
 
 
+## Ready to go
+Now you can run, the application uses 8080 port  
+> "java -jar registry-x.y.z.jar"
