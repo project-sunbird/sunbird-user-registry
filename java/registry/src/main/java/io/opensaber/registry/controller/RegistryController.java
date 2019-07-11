@@ -152,7 +152,7 @@ public class RegistryController {
             RecordIdentifier recordId = RecordIdentifier.parse(entityId);
             String shardId = dbConnectionInfoMgr.getShardId(recordId.getShardLabel());
             Shard shard = shardManager.activateShard(shardId);
-            registryService.deleteEntityById(shard,recordId.getUuid(),apiMessage.getUserID());
+            registryService.deleteEntityById(shard,apiMessage.getUserID(),recordId.getUuid());
             responseParams.setErrmsg("");
             responseParams.setStatus(Response.Status.SUCCESSFUL);
         } catch (UnsupportedOperationException e) {
@@ -178,7 +178,7 @@ public class RegistryController {
         JsonNode rootNode = apiMessage.getRequest().getRequestMapNode();
 
         try {
-            String label = registryHelper.addEntity(rootNode, apiMessage.getUserID());
+            String label = registryHelper.addEntity(apiMessage.getUserID(),rootNode);
             Map resultMap = new HashMap();
             resultMap.put(dbConnectionInfoMgr.getUuidPropertyName(), label);
 
@@ -209,7 +209,7 @@ public class RegistryController {
         Response response = new Response(Response.API_ID.READ, "OK", responseParams);
         JsonNode inputJson = apiMessage.getRequest().getRequestMapNode();
         try {
-            JsonNode resultNode = registryHelper.readEntity(inputJson,apiMessage.getUserID(),requireLDResponse);
+            JsonNode resultNode = registryHelper.readEntity(apiMessage.getUserID(),inputJson,requireLDResponse);
             // Transformation based on the mediaType
             Data<Object> data = new Data<>(resultNode);
             Configuration config = configurationHelper.getResponseConfiguration(requireLDResponse);
@@ -236,7 +236,7 @@ public class RegistryController {
         JsonNode inputJson = apiMessage.getRequest().getRequestMapNode();
         try {
             watch.start("RegistryController.update");
-            registryHelper.updateEntity(inputJson,apiMessage.getUserID());
+            registryHelper.updateEntity(apiMessage.getUserID(),inputJson);
             responseParams.setErrmsg("");
             responseParams.setStatus(Response.Status.SUCCESSFUL);
             watch.stop("RegistryController.update");

@@ -54,7 +54,7 @@ public class ElasticReadService implements IReadService {
      * @throws Exception
      */
     @Override
-    public JsonNode getEntity(Shard shard, String id, String entityType, String userId, ReadConfigurator configurator) throws Exception {
+    public JsonNode getEntity(Shard shard, String userId, String id, String entityType, ReadConfigurator configurator) throws Exception {
         JsonNode result = null;
         AuditRecord auditRecord = null;
         Map<String, Object> response = null;

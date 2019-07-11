@@ -58,7 +58,7 @@ public class NativeReadService implements IReadService {
 	 * @throws Exception
 	 */
 	@Override
-	public JsonNode getEntity(Shard shard, String id, String entityType, String userId, ReadConfigurator configurator) throws Exception {
+	public JsonNode getEntity(Shard shard, String userId, String id, String entityType, ReadConfigurator configurator) throws Exception {
 		AuditRecord auditRecord = null;
 		DatabaseProvider dbProvider = shard.getDatabaseProvider();
 		IRegistryDao registryDao = new RegistryDaoImpl(dbProvider, definitionsManager, uuidPropertyName);

@@ -139,7 +139,7 @@ public class RegistryServiceImpl implements RegistryService {
      * @throws Exception
      */
     @Override
-    public void deleteEntityById(Shard shard, String uuid, String userId) throws Exception {
+    public void deleteEntityById(Shard shard, String userId, String uuid) throws Exception {
         DatabaseProvider databaseProvider = shard.getDatabaseProvider();
         IRegistryDao registryDao = new RegistryDaoImpl(databaseProvider, definitionsManager, uuidPropertyName);
         try (OSGraph osGraph = databaseProvider.getOSGraph()) {
@@ -166,7 +166,7 @@ public class RegistryServiceImpl implements RegistryService {
      * @return
      * @throws Exception
      */
-    public String addEntity(Shard shard, JsonNode rootNode, String userId) throws Exception {
+    public String addEntity(Shard shard, String userId, JsonNode rootNode) throws Exception {
         Transaction tx = null;
         String entityId = "entityPlaceholderId";
         String vertexLabel = rootNode.fieldNames().next();
@@ -207,7 +207,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @Override
-    public void updateEntity(Shard shard, String id, String jsonString, String userId) throws Exception {
+    public void updateEntity(Shard shard, String userId, String id, String jsonString) throws Exception {
         JsonNode inputNode = objectMapper.readTree(jsonString);
         String entityType = inputNode.fields().next().getKey();
         systemFieldsHelper.ensureUpdateAuditFields(entityType, inputNode.get(entityType), userId);
