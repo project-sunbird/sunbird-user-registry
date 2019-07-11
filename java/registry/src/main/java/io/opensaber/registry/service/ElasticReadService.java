@@ -43,8 +43,6 @@ public class ElasticReadService implements IReadService {
 
     @Autowired
     private IAuditService auditService;
-    @Autowired
-    private APIMessage apiMessage;
 
     /**
      * This method interacts with the Elasticsearch and reads the record
@@ -56,7 +54,7 @@ public class ElasticReadService implements IReadService {
      * @throws Exception
      */
     @Override
-    public JsonNode getEntity(Shard shard, String id, String entityType, ReadConfigurator configurator) throws Exception {
+    public JsonNode getEntity(Shard shard, String userId, String id, String entityType, ReadConfigurator configurator) throws Exception {
         JsonNode result = null;
         AuditRecord auditRecord = null;
         Map<String, Object> response = null;
@@ -74,7 +72,7 @@ public class ElasticReadService implements IReadService {
             JSONUtil.removeNode((ObjectNode) result, Constants.SIGNATURES_STR);
         }
         auditRecord = new AuditRecord();
-        auditRecord.setUserId(apiMessage.getUserID()).setAction(Constants.AUDIT_ACTION_READ).setRecordId(id).
+        auditRecord.setUserId(userId).setAction(Constants.AUDIT_ACTION_READ).setRecordId(id).
                 setAuditId(UUID.randomUUID().toString()).setTimeStamp(DateUtil.getTimeStamp());
         AuditInfo auditInfo = new AuditInfo();
         auditInfo.setOp(Constants.AUDIT_ACTION_READ_OP);
