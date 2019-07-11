@@ -16,6 +16,6 @@ import org.slf4j.LoggerFactory;
 
 public interface IReadService {
 
-    JsonNode getEntity(Shard shard, String id, String entityType, ReadConfigurator configurator) throws Exception;
+    JsonNode getEntity(Shard shard, String userId, String id, String entityType, ReadConfigurator configurator) throws Exception;
 
 }

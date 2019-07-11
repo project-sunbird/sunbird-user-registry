@@ -68,7 +68,7 @@ public class RegistryHelper {
             logger.info("Add api: entity type: {} and shard propery: {}", entityType, shardManager.getShardProperty());
             Shard shard = shardManager.getShard(inputJson.get(entityType).get(shardManager.getShardProperty()));
             watch.start("RegistryController.addToExistingEntity");
-            String resultId = registryService.addEntity(shard,inputJson,userId);
+            String resultId = registryService.addEntity(shard,userId,inputJson);
             recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
             watch.stop("RegistryController.addToExistingEntity");
             logger.info("AddEntity,{}", recordId.toString());
@@ -86,7 +86,7 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public JsonNode readEntity(JsonNode inputJson, boolean requireLDResponse) throws Exception {
+    public JsonNode readEntity(JsonNode inputJson, String userId, boolean requireLDResponse) throws Exception {
         logger.debug("readEntity starts");
         boolean includeSignatures = false;
         String entityType = inputJson.fields().next().getKey();
@@ -101,7 +101,7 @@ public class RegistryHelper {
         }
         ReadConfigurator configurator = ReadConfiguratorFactory.getOne(includeSignatures);
         configurator.setIncludeTypeAttributes(requireLDResponse);
-        JsonNode resultNode =  readService.getEntity(shard, recordId.getUuid(), entityType, configurator);
+        JsonNode resultNode =  readService.getEntity(shard, userId, recordId.getUuid(), entityType, configurator);
 
         ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
 
@@ -120,8 +120,8 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public JsonNode readEntity(JsonNode inputJson) throws Exception {
-        return readEntity(inputJson,false);
+    public JsonNode readEntity(JsonNode inputJson, String userId) throws Exception {
+        return readEntity(inputJson,userId,false);
     }
 
     /** Search the input in the configured backend, external api's can use this method for searching
@@ -156,7 +156,7 @@ public class RegistryHelper {
         String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
         RecordIdentifier recordId = RecordIdentifier.parse(label);
         logger.info("Update Api: shard id: " + recordId.getShardLabel() + " for uuid: " + recordId.getUuid());
-        registryService.updateEntity(shard, recordId.getUuid(), jsonString, userId);
+        registryService.updateEntity(shard, userId, recordId.getUuid(), jsonString);
         logger.debug("updateEntity ends");
         return "SUCCESS";
     }
