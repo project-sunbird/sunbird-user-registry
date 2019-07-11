@@ -61,7 +61,7 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public String addEntity(String userId, JsonNode inputJson) throws Exception {
+    public String addEntity(JsonNode inputJson, String userId) throws Exception {
         RecordIdentifier recordId = null;
         String entityType = inputJson.fields().next().getKey();
         try {
@@ -86,7 +86,7 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public JsonNode readEntity(String userId, JsonNode inputJson, boolean requireLDResponse) throws Exception {
+    public JsonNode readEntity(JsonNode inputJson, String userId, boolean requireLDResponse) throws Exception {
         logger.debug("readEntity starts");
         boolean includeSignatures = false;
         String entityType = inputJson.fields().next().getKey();
@@ -120,8 +120,8 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public JsonNode readEntity(String userId, JsonNode inputJson) throws Exception {
-        return readEntity(userId,inputJson,false);
+    public JsonNode readEntity(JsonNode inputJson, String userId) throws Exception {
+        return readEntity(inputJson,userId,false);
     }
 
     /** Search the input in the configured backend, external api's can use this method for searching
@@ -148,7 +148,7 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public String updateEntity(String userId, JsonNode inputJson) throws Exception {
+    public String updateEntity(JsonNode inputJson, String userId) throws Exception {
         logger.debug("updateEntity starts");
         String entityType = inputJson.fields().next().getKey();
         String jsonString = objectMapper.writeValueAsString(inputJson);

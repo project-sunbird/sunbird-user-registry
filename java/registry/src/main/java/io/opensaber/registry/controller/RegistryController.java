@@ -178,7 +178,7 @@ public class RegistryController {
         JsonNode rootNode = apiMessage.getRequest().getRequestMapNode();
 
         try {
-            String label = registryHelper.addEntity(apiMessage.getUserID(),rootNode);
+            String label = registryHelper.addEntity(rootNode,apiMessage.getUserID());
             Map resultMap = new HashMap();
             resultMap.put(dbConnectionInfoMgr.getUuidPropertyName(), label);
 
@@ -209,7 +209,7 @@ public class RegistryController {
         Response response = new Response(Response.API_ID.READ, "OK", responseParams);
         JsonNode inputJson = apiMessage.getRequest().getRequestMapNode();
         try {
-            JsonNode resultNode = registryHelper.readEntity(apiMessage.getUserID(),inputJson,requireLDResponse);
+            JsonNode resultNode = registryHelper.readEntity(inputJson,apiMessage.getUserID(),requireLDResponse);
             // Transformation based on the mediaType
             Data<Object> data = new Data<>(resultNode);
             Configuration config = configurationHelper.getResponseConfiguration(requireLDResponse);
@@ -236,7 +236,7 @@ public class RegistryController {
         JsonNode inputJson = apiMessage.getRequest().getRequestMapNode();
         try {
             watch.start("RegistryController.update");
-            registryHelper.updateEntity(apiMessage.getUserID(),inputJson);
+            registryHelper.updateEntity(inputJson,apiMessage.getUserID());
             responseParams.setErrmsg("");
             responseParams.setStatus(Response.Status.SUCCESSFUL);
             watch.stop("RegistryController.update");
