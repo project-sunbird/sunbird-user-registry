@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.opensaber.pojos.OpenSaberInstrumentation;
 import io.opensaber.registry.model.DBConnectionInfoMgr;
+import io.opensaber.registry.service.DecryptionHelper;
 import io.opensaber.registry.service.IReadService;
 import io.opensaber.registry.service.ISearchService;
 import io.opensaber.registry.service.RegistryService;
@@ -50,6 +51,9 @@ public class RegistryHelper {
     private DBConnectionInfoMgr dbConnectionInfoMgr;
 
     @Autowired
+    private DecryptionHelper decryptionHelper;
+
+    @Autowired
     private OpenSaberInstrumentation watch;
 
     @Autowired
@@ -89,6 +93,7 @@ public class RegistryHelper {
     public JsonNode readEntity(JsonNode inputJson, String userId, boolean requireLDResponse) throws Exception {
         logger.debug("readEntity starts");
         boolean includeSignatures = false;
+        JsonNode resultNode = null;
         String entityType = inputJson.fields().next().getKey();
         String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
         RecordIdentifier recordId = RecordIdentifier.parse(label);
@@ -101,13 +106,16 @@ public class RegistryHelper {
         }
         ReadConfigurator configurator = ReadConfiguratorFactory.getOne(includeSignatures);
         configurator.setIncludeTypeAttributes(requireLDResponse);
-        JsonNode resultNode =  readService.getEntity(shard, userId, recordId.getUuid(), entityType, configurator);
-
         ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
 
         if (viewTemplate != null) {
+            configurator.setIncludeEncryptedProp(viewTemplate.isPrivateFields());
+            resultNode =  readService.getEntity(shard, userId, recordId.getUuid(), entityType, configurator);
             ViewTransformer vTransformer = new ViewTransformer();
             resultNode = vTransformer.transform(viewTemplate, resultNode);
+            resultNode = viewTemplate.isPrivateFields() ? decryptionHelper.getDecryptedJson(resultNode) : resultNode;
+        } else {
+            resultNode =  readService.getEntity(shard, userId, recordId.getUuid(), entityType, configurator);
         }
         logger.debug("readEntity ends");
         return resultNode;

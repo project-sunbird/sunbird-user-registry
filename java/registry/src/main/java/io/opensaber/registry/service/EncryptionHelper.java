@@ -15,9 +15,9 @@ import java.util.Map;
 @Component
 public class EncryptionHelper {
     @Autowired
-    private EncryptionService encryptionService;
+    protected EncryptionService encryptionService;
     @Autowired
-    private DefinitionsManager definitionsManager;
+    protected DefinitionsManager definitionsManager;
 
     public JsonNode getEncryptedJson(JsonNode rootNode) throws EncryptionException {
         JsonNode encryptedRoot = rootNode;
@@ -40,7 +40,7 @@ public class EncryptionHelper {
      * @param privatePropertyLst
      * @return the keys and values that need to be encrypted
      */
-    private Map<String, Object> getToBeEncryptedMap(JsonNode rootNode, List<String> privatePropertyLst) {
+    protected Map<String, Object> getToBeEncryptedMap(JsonNode rootNode, List<String> privatePropertyLst) {
         Map<String, Object> plainKeyValues = new HashMap<>();
         rootNode.fields().forEachRemaining(entry -> {
             JsonNode entryValue = entry.getValue();
@@ -62,7 +62,7 @@ public class EncryptionHelper {
      * @param privatePropertyLst
      * @param encodedMap Contains the values encrypted
      */
-    private JsonNode replaceWithEncryptedValues(JsonNode rootNode, List<String> privatePropertyLst, Map<String, Object> encodedMap) {
+    protected JsonNode replaceWithEncryptedValues(JsonNode rootNode, List<String> privatePropertyLst, Map<String, Object> encodedMap) {
         JsonNode encryptedRootNode = rootNode;
 
         encryptedRootNode.fields().forEachRemaining(entry -> {
