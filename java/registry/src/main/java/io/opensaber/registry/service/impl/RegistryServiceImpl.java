@@ -153,7 +153,7 @@ public class RegistryServiceImpl implements RegistryService {
                 registryDao.deleteEntity(vertex);
                 databaseProvider.commitTransaction(graph, tx);
                 String index = vertex.property(Constants.TYPE_STR_JSON_LD).isPresent() ? (String) vertex.property(Constants.TYPE_STR_JSON_LD).value() : null;
-                callAuditESActors(null,null,"delete", Constants.AUDIT_ACTION_DELETE,uuid,index,uuid,userId,tx);
+                callAuditESActors(userId,null,null,"delete", Constants.AUDIT_ACTION_DELETE,uuid,index,uuid,tx);
             }
             logger.info("Entity {} marked deleted", uuid);
         }
@@ -200,7 +200,7 @@ public class RegistryServiceImpl implements RegistryService {
             Definition definition = definitionsManager.getDefinition(vertexLabel);
             entityParenter.ensureIndexExists(dbProvider, parentVertex, definition, shardId);
 
-            callAuditESActors(null,rootNode,"add", Constants.AUDIT_ACTION_ADD,entityId,vertexLabel,entityId,userId,tx);
+            callAuditESActors(userId,null,rootNode,"add", Constants.AUDIT_ACTION_ADD,entityId,vertexLabel,entityId,tx);
 
         }
         return entityId;
@@ -283,13 +283,13 @@ public class RegistryServiceImpl implements RegistryService {
 
             databaseProvider.commitTransaction(graph, tx);
             // elastic-search and audit akka calls starts here
-            callAuditESActors(readNode,mergedNode,"update",Constants.AUDIT_ACTION_UPDATE,id,entityType,rootId,userId,tx);
+            callAuditESActors(userId,readNode,mergedNode,"update",Constants.AUDIT_ACTION_UPDATE,id,entityType,rootId,tx);
         }
     }
 
     @Async("auditExecutor")
-    public void callAuditESActors(JsonNode readNode, JsonNode mergedNode, String operation, String auditAction, String id,
-                                  String parentEntityType, String entityRootId, String userId, Transaction tx) throws JsonProcessingException {
+    public void callAuditESActors(String userId, JsonNode readNode, JsonNode mergedNode, String operation, String auditAction, String id,
+                                  String parentEntityType, String entityRootId, Transaction tx) throws JsonProcessingException {
         logger.debug("callAuditESActors started");
         List<AuditInfo> auditItemDetails = null;
         auditRecord = new AuditRecord();
