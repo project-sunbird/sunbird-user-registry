@@ -109,14 +109,14 @@ public class RegistryHelper {
         configurator.setIncludeTypeAttributes(requireLDResponse);
         ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
         if (viewTemplate != null) {
-            includePrivateFields = viewTemplate.isPrivateFields();
+            includePrivateFields = viewTemplateManager.isPrivateFieldEnabled(viewTemplate,entityType);
         }
         configurator.setIncludeEncryptedProp(includePrivateFields);
         resultNode =  readService.getEntity(shard, userId, recordId.getUuid(), entityType, configurator);
         if (viewTemplate != null) {
             ViewTransformer vTransformer = new ViewTransformer();
-            resultNode = vTransformer.transform(viewTemplate, resultNode);
             resultNode = includePrivateFields ? decryptionHelper.getDecryptedJson(resultNode) : resultNode;
+            resultNode = vTransformer.transform(viewTemplate, resultNode);
         }
         logger.debug("readEntity ends");
         return resultNode;

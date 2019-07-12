@@ -2,6 +2,7 @@ package io.opensaber.views;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +13,6 @@ public class ViewTemplate {
     private String id;
     private String subject;    
     private List<Field> fields;
-    private boolean privateFields;
     private List<FunctionDefinition> functionDefinitions;
     
     public String getId() {
@@ -38,13 +38,6 @@ public class ViewTemplate {
     }
     public void setFields(List<Field> fields) {
         this.fields = fields;
-    }
-    public boolean isPrivateFields() {
-        return privateFields;
-    }
-
-    public void setPrivateFields(boolean privateFields) {
-        this.privateFields = privateFields;
     }
 
     /**

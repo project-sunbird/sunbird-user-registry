@@ -15,7 +15,7 @@ public class PrivateField {
      * @param privatePropertyLst
      * @return the keys and values that need to be encrypted/decrypted based on base call
      */
-    public static Map<String, Object> getPrivateFields(JsonNode rootNode, List<String> privatePropertyLst) {
+    public Map<String, Object> getPrivateFields(JsonNode rootNode, List<String> privatePropertyLst) {
         Map<String, Object> plainKeyValues = new HashMap<>();
         rootNode.fields().forEachRemaining(entry -> {
             JsonNode entryValue = entry.getValue();
@@ -37,7 +37,7 @@ public class PrivateField {
      * @param privatePropertyLst
      * @param privateFieldMap Contains the values encrypted/decrypted based on base call
      */
-    public static JsonNode replacePrivateFields(JsonNode rootNode, List<String> privatePropertyLst, Map<String, Object> privateFieldMap) {
+    public JsonNode replacePrivateFields(JsonNode rootNode, List<String> privatePropertyLst, Map<String, Object> privateFieldMap) {
 
         rootNode.fields().forEachRemaining(entry -> {
             JsonNode entryValue = entry.getValue();
