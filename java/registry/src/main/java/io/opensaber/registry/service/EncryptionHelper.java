@@ -35,7 +35,8 @@ public class EncryptionHelper {
     }
 
     /**
-     * Identifies the keys in the rootNode that needs to be encrypted.
+     * Identifies the keys in the rootNode that needs to be encrypted. The functionality is same while decrypting the values.
+     * It is common method we use while encryption and decryption.
      * @param rootNode
      * @param privatePropertyLst
      * @return the keys and values that need to be encrypted
@@ -55,8 +56,8 @@ public class EncryptionHelper {
     }
 
     /**
-     * Given the root node, based on the privatePropertyList, fetch the encrypted value
-     * and replace the root node value (original unencrypted).
+     * Given the root node, based on the privatePropertyList, fetch the encrypted value.
+     * and replace the root node value (original unencrypted). The functionality is same while decrypting the values. It is common method we use while encryption and decryption.
      *
      * @param rootNode
      * @param privatePropertyLst

@@ -17,18 +17,18 @@ import java.util.Map;
 public class DecryptionHelper extends EncryptionHelper{
 
     public JsonNode getDecryptedJson(JsonNode rootNode) throws EncryptionException {
-        JsonNode encryptedRoot = rootNode;
+        JsonNode decryptedRoot = rootNode;
         String rootFieldName = rootNode.fieldNames().next();
         Definition definition = definitionsManager.getDefinition(rootFieldName);
         List<String> privatePropertyLst = definition.getOsSchemaConfiguration().getPrivateFields();
         if (rootNode.isObject()) {
-            Map<String, Object> plainMap = super.getToBeEncryptedMap(rootNode, privatePropertyLst);
+            Map<String, Object> plainMap = getToBeEncryptedMap(rootNode, privatePropertyLst);
             if(null != plainMap){
                 Map<String, Object> encodedMap = encryptionService.decrypt(plainMap);
-                encryptedRoot  = replaceWithEncryptedValues(rootNode, privatePropertyLst, encodedMap);
+                decryptedRoot  = replaceWithEncryptedValues(rootNode, privatePropertyLst, encodedMap);
             }
         }
-        return encryptedRoot;
+        return decryptedRoot;
     }
 
 }
