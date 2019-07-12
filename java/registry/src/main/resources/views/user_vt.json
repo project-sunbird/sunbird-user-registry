@@ -1,6 +1,5 @@
 {
   "subject": "User",
-  "privateFields": true,
   "fields": [
     {
       "name": "email",
