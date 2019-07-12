@@ -6,6 +6,7 @@ import io.opensaber.registry.exception.EncryptionException;
 import io.opensaber.registry.service.EncryptionService;
 import io.opensaber.registry.util.Definition;
 import io.opensaber.registry.util.DefinitionsManager;
+import io.opensaber.registry.util.PrivateField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,11 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class DecryptionHelper extends EncryptionHelper{
+public class DecryptionHelper {
+    @Autowired
+    private EncryptionService encryptionService;
+    @Autowired
+    private DefinitionsManager definitionsManager;
 
     public JsonNode getDecryptedJson(JsonNode rootNode) throws EncryptionException {
         JsonNode decryptedRoot = rootNode;
@@ -22,10 +27,10 @@ public class DecryptionHelper extends EncryptionHelper{
         Definition definition = definitionsManager.getDefinition(rootFieldName);
         List<String> privatePropertyLst = definition.getOsSchemaConfiguration().getPrivateFields();
         if (rootNode.isObject()) {
-            Map<String, Object> plainMap = getToBeEncryptedMap(rootNode, privatePropertyLst);
+            Map<String, Object> plainMap = PrivateField.getPrivateFields(rootNode, privatePropertyLst);
             if(null != plainMap){
                 Map<String, Object> encodedMap = encryptionService.decrypt(plainMap);
-                decryptedRoot  = replaceWithEncryptedValues(rootNode, privatePropertyLst, encodedMap);
+                decryptedRoot  = PrivateField.replacePrivateFields(rootNode, privatePropertyLst, encodedMap);
             }
         }
         return decryptedRoot;

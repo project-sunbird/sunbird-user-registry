@@ -93,6 +93,7 @@ public class RegistryHelper {
     public JsonNode readEntity(JsonNode inputJson, String userId, boolean requireLDResponse) throws Exception {
         logger.debug("readEntity starts");
         boolean includeSignatures = false;
+        boolean includePrivateFields =  false;
         JsonNode resultNode = null;
         String entityType = inputJson.fields().next().getKey();
         String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
@@ -107,15 +108,15 @@ public class RegistryHelper {
         ReadConfigurator configurator = ReadConfiguratorFactory.getOne(includeSignatures);
         configurator.setIncludeTypeAttributes(requireLDResponse);
         ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
-
         if (viewTemplate != null) {
-            configurator.setIncludeEncryptedProp(viewTemplate.isPrivateFields());
-            resultNode =  readService.getEntity(shard, userId, recordId.getUuid(), entityType, configurator);
+            includePrivateFields = viewTemplate.isPrivateFields();
+        }
+        configurator.setIncludeEncryptedProp(includePrivateFields);
+        resultNode =  readService.getEntity(shard, userId, recordId.getUuid(), entityType, configurator);
+        if (viewTemplate != null) {
             ViewTransformer vTransformer = new ViewTransformer();
             resultNode = vTransformer.transform(viewTemplate, resultNode);
-            resultNode = viewTemplate.isPrivateFields() ? decryptionHelper.getDecryptedJson(resultNode) : resultNode;
-        } else {
-            resultNode =  readService.getEntity(shard, userId, recordId.getUuid(), entityType, configurator);
+            resultNode = includePrivateFields ? decryptionHelper.getDecryptedJson(resultNode) : resultNode;
         }
         logger.debug("readEntity ends");
         return resultNode;
