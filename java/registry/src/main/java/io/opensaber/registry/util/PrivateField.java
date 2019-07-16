@@ -2,12 +2,19 @@ package io.opensaber.registry.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import io.opensaber.registry.service.EncryptionService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PrivateField {
+
+    @Autowired
+    public EncryptionService encryptionService;
+    @Autowired
+    public DefinitionsManager definitionsManager;
 
     /**
      * Identifies the keys in the rootNode that needs to be encrypted/decrypted
