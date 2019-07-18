@@ -82,7 +82,7 @@ public class RegistryController {
      */
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     public ResponseEntity<Response> searchEntity(@RequestHeader HttpHeaders header) {
-
+        HttpStatus httpStatus = null;
         ResponseParams responseParams = new ResponseParams();
         Response response = new Response(Response.API_ID.SEARCH, "OK", responseParams);
         JsonNode payload = apiMessage.getRequest().getRequestMapNode();
@@ -96,16 +96,18 @@ public class RegistryController {
             JsonNode result = registryHelper.searchEntity(payload);
 
             response.setResult(result);
+            httpStatus = HttpStatus.OK;
             responseParams.setStatus(Response.Status.SUCCESSFUL);
             watch.stop("RegistryController.searchEntity");
-        } catch (Exception e) {
+        } catch (OpenSaberException e) {
             logger.error("Exception in controller while searching entities !",
                     e);
             response.setResult("");
             responseParams.setStatus(Response.Status.UNSUCCESSFUL);
-            responseParams.setErrmsg(e.getMessage());
+            responseParams.setErrmsg(e.getErrorMessage());
+            httpStatus = HttpStatus.valueOf(e.getStatus());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, httpStatus);
     }
 
     @RequestMapping(value = "/health", method = RequestMethod.GET)
@@ -242,6 +244,7 @@ public class RegistryController {
     @ResponseBody
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public ResponseEntity<Response> updateEntity() {
+        HttpStatus httpStatus = null;
         ResponseParams responseParams = new ResponseParams();
         Response response = new Response(Response.API_ID.UPDATE, "OK", responseParams);
 
@@ -251,12 +254,14 @@ public class RegistryController {
             registryHelper.updateEntity(inputJson,apiMessage.getUserID());
             responseParams.setErrmsg("");
             responseParams.setStatus(Response.Status.SUCCESSFUL);
+            httpStatus = HttpStatus.OK;
             watch.stop("RegistryController.update");
-        } catch (Exception e) {
+        } catch (OpenSaberException e) {
             logger.error("RegistryController: Exception while updating entity (without id)!", e);
             responseParams.setStatus(Response.Status.UNSUCCESSFUL);
-            responseParams.setErrmsg(e.getMessage());
+            responseParams.setErrmsg(e.getErrorMessage());
+            httpStatus = HttpStatus.valueOf(e.getStatus());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, httpStatus);
     }
 }

@@ -77,11 +77,7 @@ public class RegistryHelper {
             recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
             watch.stop("RegistryController.addToExistingEntity");
             logger.info("AddEntity,{}", recordId.toString());
-        } /*catch(ClassCastException e) {
-            logger.error("Exception in writeNodeEntity",e);
-            throw new OpenSaberException("error code for node manipulation", e.getMessage(), ErrorConstants.ENCRYPTION_INTERNAL_ERROR_STATUS);
-        }*/
-        catch(RuntimeException e) {
+        } catch(RuntimeException e) {
             logger.error("Exception in addEntity", e);
             if (e.getMessage().contains("unique constraint")) {
                 throw new OpenSaberException(ErrorConstants.DB_CONSTRAINT_ERROR_CODE, e.getMessage(), ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
@@ -89,10 +85,10 @@ public class RegistryHelper {
                 throw new OpenSaberException(ErrorConstants.OS_CORE_INTERNAL_ERROR_CODE, e.getMessage(), ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
             }
         } catch(OpenSaberException e) {
-            logger.error("Exception in addEntity",e);
+            logger.error("Exception in addEntity {}",e);
             throw e;
         } catch(Exception e) {
-            logger.error("Exception in addEntity",e);
+            logger.error("Exception in addEntity {}",e);
             throw new OpenSaberException(ErrorConstants.OS_CORE_INTERNAL_ERROR_CODE, e.getMessage(), ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
         }
 
@@ -137,10 +133,10 @@ public class RegistryHelper {
             }
             logger.debug("readEntity ends");
         } catch (OpenSaberException e) {
-            logger.error("Exception in readEntity", e);
+            logger.error("Exception in readEntity {}", e);
             throw e;
         } catch (Exception e) {
-            logger.error("Exception in readEntity", e);
+            logger.error("Exception in readEntity {}", e);
             throw new OpenSaberException(ErrorConstants.OS_CORE_INTERNAL_ERROR_CODE,e.getMessage(),ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
         }
         return resultNode;
@@ -162,16 +158,22 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public JsonNode searchEntity(JsonNode inputJson) throws Exception {
+    public JsonNode searchEntity(JsonNode inputJson) throws OpenSaberException {
         logger.debug("searchEntity starts");
-        JsonNode resultNode = searchService.search(inputJson);
-        ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
-        if (viewTemplate != null) {
-            ViewTransformer vTransformer = new ViewTransformer();
-            resultNode = vTransformer.transform(viewTemplate, resultNode);
+        JsonNode resultNode = null;
+        try{
+            resultNode = searchService.search(inputJson);
+            ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
+            if (viewTemplate != null) {
+                ViewTransformer vTransformer = new ViewTransformer();
+                resultNode = vTransformer.transform(viewTemplate, resultNode);
+            }
+            // Search is tricky to support LD. Needs a revisit here.
+            logger.debug("searchEntity ends");
+        } catch (Exception e) {
+            logger.error("Exception in searchEntity {}", e);
+            throw new OpenSaberException(ErrorConstants.OS_CORE_INTERNAL_ERROR_CODE,e.getMessage(),ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
         }
-        // Search is tricky to support LD. Needs a revisit here.
-        logger.debug("searchEntity ends");
         return resultNode;
     }
 
@@ -181,16 +183,24 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public String updateEntity(JsonNode inputJson, String userId) throws Exception {
+    public String updateEntity(JsonNode inputJson, String userId) throws OpenSaberException {
         logger.debug("updateEntity starts");
-        String entityType = inputJson.fields().next().getKey();
-        String jsonString = objectMapper.writeValueAsString(inputJson);
-        Shard shard = shardManager.getShard(inputJson.get(entityType).get(shardManager.getShardProperty()));
-        String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
-        RecordIdentifier recordId = RecordIdentifier.parse(label);
-        logger.info("Update Api: shard id: " + recordId.getShardLabel() + " for uuid: " + recordId.getUuid());
-        registryService.updateEntity(shard, userId, recordId.getUuid(), jsonString);
-        logger.debug("updateEntity ends");
+        try{
+            String entityType = inputJson.fields().next().getKey();
+            String jsonString = objectMapper.writeValueAsString(inputJson);
+            Shard shard = shardManager.getShard(inputJson.get(entityType).get(shardManager.getShardProperty()));
+            String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
+            RecordIdentifier recordId = RecordIdentifier.parse(label);
+            logger.info("Update Api: shard id: " + recordId.getShardLabel() + " for uuid: " + recordId.getUuid());
+            registryService.updateEntity(shard, userId, recordId.getUuid(), jsonString);
+            logger.debug("updateEntity ends");
+        } catch (OpenSaberException e) {
+            logger.error("Exception in updateEntity {}", e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Exception in updateEntity {}", e);
+            throw new OpenSaberException(ErrorConstants.OS_CORE_INTERNAL_ERROR_CODE,e.getMessage(),ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
+        }
         return "SUCCESS";
     }
 
