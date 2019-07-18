@@ -68,8 +68,7 @@ public class ViewTemplateManager {
      * @throws JsonMappingException
      * @throws IOException
      */
-	public ViewTemplate getViewTemplate(JsonNode requestNode)
-			throws JsonParseException, JsonMappingException, IOException {
+	public ViewTemplate getViewTemplate(JsonNode requestNode) {
 
 		ViewTemplate viewTemp = null;
 		String name = null;
@@ -91,7 +90,7 @@ public class ViewTemplateManager {
 	}
     
 	private ViewTemplate getViewTemplateByContent(String templateContent)
-			throws JsonParseException, JsonMappingException, IOException {
+			throws IOException {
 		return mapper.readValue(templateContent, ViewTemplate.class);
 	}
 

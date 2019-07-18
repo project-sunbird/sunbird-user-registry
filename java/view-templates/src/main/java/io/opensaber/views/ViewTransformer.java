@@ -18,7 +18,7 @@ public class ViewTransformer {
      * @param node
      * @return
      */
-	public JsonNode transform(ViewTemplate viewTemplate, JsonNode node) throws Exception {
+	public JsonNode transform(ViewTemplate viewTemplate, JsonNode node) {
 
 		ObjectNode result = JsonNodeFactory.instance.objectNode();
 
@@ -60,7 +60,7 @@ public class ViewTransformer {
      * @param nodeAttrs
      * @return
      */
-    private JsonNode tranformNode(ViewTemplate viewTemplate, JsonNode nodeAttrs) throws Exception {
+    private JsonNode tranformNode(ViewTemplate viewTemplate, JsonNode nodeAttrs) {
         ObjectNode result = JsonNodeFactory.instance.objectNode();
 
         for (Field field : viewTemplate.getFields()) {

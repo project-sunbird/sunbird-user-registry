@@ -6,6 +6,7 @@ import io.opensaber.pojos.HealthCheckResponse;
 import io.opensaber.pojos.OpenSaberInstrumentation;
 import io.opensaber.pojos.Response;
 import io.opensaber.pojos.ResponseParams;
+import io.opensaber.registry.exception.OpenSaberException;
 import io.opensaber.registry.helper.RegistryHelper;
 import io.opensaber.registry.middleware.MiddlewareHaltException;
 import io.opensaber.registry.middleware.util.Constants;
@@ -171,6 +172,7 @@ public class RegistryController {
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public ResponseEntity<Response> addEntity() {
+        HttpStatus httpStatus = null;
         ResponseParams responseParams = new ResponseParams();
         Response response = new Response(Response.API_ID.CREATE, "OK", responseParams);
         Map<String, Object> result = new HashMap<>();
@@ -185,14 +187,16 @@ public class RegistryController {
             result.put(entityType, resultMap);
             response.setResult(result);
             responseParams.setStatus(Response.Status.SUCCESSFUL);
+            httpStatus = HttpStatus.OK;
             watch.stop("RegistryController.addToExistingEntity");
-        } catch (Exception e) {
+        } catch (OpenSaberException e) {
             logger.error("Exception in controller while adding entity !", e);
             response.setResult(result);
             responseParams.setStatus(Response.Status.UNSUCCESSFUL);
-            responseParams.setErrmsg(e.getMessage());
+            responseParams.setErrmsg(e.getErrorMessage());
+            httpStatus = HttpStatus.valueOf(e.getStatus());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, httpStatus);
     }
 
     /**
@@ -203,6 +207,7 @@ public class RegistryController {
      */
     @RequestMapping(value = "/read", method = RequestMethod.POST)
     public ResponseEntity<Response> readEntity(@RequestHeader HttpHeaders header) {
+        HttpStatus httpStatus = null;
         boolean requireLDResponse = header.getAccept().contains(Constants.LD_JSON_MEDIA_TYPE);
 
         ResponseParams responseParams = new ResponseParams();
@@ -217,14 +222,21 @@ public class RegistryController {
             ITransformer<Object> responseTransformer = transformer.getInstance(config);
             Data<Object> resultContent = responseTransformer.transform(data);
             response.setResult(resultContent.getData());
+            httpStatus = HttpStatus.OK;
             logger.info("ReadEntity,{},{}", resultNode.get(apiMessage.getRequest().getEntityType()).get(uuidPropertyName),config);
+        } catch (OpenSaberException e) {
+            logger.error("Read Api Exception occurred ", e);
+            responseParams.setErrmsg(e.getErrorMessage());
+            responseParams.setStatus(Response.Status.UNSUCCESSFUL);
+            httpStatus = HttpStatus.valueOf(e.getStatus());
         } catch (Exception e) {
             logger.error("Read Api Exception occurred ", e);
             responseParams.setErrmsg(e.getMessage());
             responseParams.setStatus(Response.Status.UNSUCCESSFUL);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, httpStatus);
     }
 
     @ResponseBody

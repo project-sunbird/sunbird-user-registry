@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.opensaber.registry.exception.RecordNotFoundException;
+import io.opensaber.registry.exception.ReadEntityException;
 import io.opensaber.registry.middleware.util.Constants;
 import io.opensaber.registry.middleware.util.JSONUtil;
 import io.opensaber.registry.sink.DatabaseProvider;
@@ -428,13 +428,13 @@ public class VertexReader {
 
     private JsonNode readInternal(Vertex rootVertex) throws Exception {
         if (null == rootVertex) {
-            throw new Exception("Invalid id");
+            throw new ReadEntityException.InValidRecordIdException();
         }
 
         int currLevel = 0;
         if (rootVertex.property(Constants.STATUS_KEYWORD).isPresent()
                 && rootVertex.property(Constants.STATUS_KEYWORD).value().equals(Constants.STATUS_INACTIVE)) {
-            throw new RecordNotFoundException("entity status is inactive");
+            throw new ReadEntityException.RecordNotFoundException();
         }
         ObjectNode rootNode = constructObject(rootVertex);
         entityType = (String) ValueType.getValue(rootNode.get(TypePropertyHelper.getTypeName()));

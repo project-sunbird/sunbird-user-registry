@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.opensaber.audit.IAuditService;
 import io.opensaber.elastic.IElasticService;
-import io.opensaber.pojos.APIMessage;
 import io.opensaber.pojos.AuditInfo;
 import io.opensaber.pojos.AuditRecord;
-import io.opensaber.registry.exception.RecordNotFoundException;
+import io.opensaber.registry.exception.OpenSaberException;
+import io.opensaber.registry.exception.ReadEntityException;
 import io.opensaber.registry.middleware.util.Constants;
 import io.opensaber.registry.middleware.util.DateUtil;
 import io.opensaber.registry.middleware.util.JSONUtil;
@@ -65,7 +65,7 @@ public class ElasticReadService implements IReadService {
             logger.error("Exception in reading a record to ElasticSearch", e);
         }
         if (response == null) {
-            throw new RecordNotFoundException("Record with " + id + " not found");
+            throw new ReadEntityException.InValidRecordIdException("Record with " + id + " not found");
         }
         result = objectMapper.convertValue(response, JsonNode.class);
         if (!configurator.isIncludeSignatures()) {
