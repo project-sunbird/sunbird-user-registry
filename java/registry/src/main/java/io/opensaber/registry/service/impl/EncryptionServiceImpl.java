@@ -3,7 +3,7 @@ package io.opensaber.registry.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.opensaber.pojos.OpenSaberInstrumentation;
-import io.opensaber.registry.exception.EncryptionException;
+import io.opensaber.registry.exception.ExternalServiceException;
 import io.opensaber.registry.service.EncryptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +48,11 @@ public class EncryptionServiceImpl implements EncryptionService {
 	/** encrypts the input
 	 * @param propertyValue - single value or object as input for encryption
 	 * @return - encrypted value
-	 * @throws EncryptionException
+	 * @throws ExternalServiceException
 	 */
 	@Override
-	public String encrypt(Object propertyValue) throws EncryptionException {
+	public String encrypt(Object propertyValue) throws ExternalServiceException.ResourceAccessException,
+			ExternalServiceException.InternalException {
 		logger.debug("encrypt starts with value");
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 		map.add("value", propertyValue);
@@ -60,21 +61,22 @@ public class EncryptionServiceImpl implements EncryptionService {
 			ResponseEntity<String> response = retryRestTemplate.postForEntity(encryptionUri, request);
 			return response.getBody();
 		} catch (ResourceAccessException e) {
-			logger.error("ResourceAccessException while connecting enryption service : ", e);
-			throw new EncryptionException("Exception while connecting enryption service! ");
+			logger.error("ResourceAccessException while connecting encryption service : ", e);
+			throw new ExternalServiceException.ResourceAccessException("Exception while connecting encryption service! ");
 		} catch (Exception e) {
 			logger.error("Exception in encryption service !: ", e);
-			throw new EncryptionException("Exception in encryption service");
+			throw new ExternalServiceException.InternalException("Exception in encryption service");
 		}
 	}
 
 	/** decrypts the input
 	 * @param propertyValue - single value or object as input for decryption
 	 * @return - decrypted value
-	 * @throws EncryptionException
+	 * @throws ExternalServiceException
 	 */
 	@Override
-	public String decrypt(Object propertyValue) throws EncryptionException {
+	public String decrypt(Object propertyValue) throws ExternalServiceException.ResourceAccessException,
+			ExternalServiceException.InternalException {
 		logger.debug("decrypt starts with value {}", propertyValue);
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 		map.add("value", propertyValue);
@@ -84,21 +86,22 @@ public class EncryptionServiceImpl implements EncryptionService {
 			logger.info("Property decrypted successfully !");
 			return response.getBody();
 		} catch (ResourceAccessException e) {
-			logger.error("ResourceAccessException while connecting dcryption service : ", e);
-			throw new EncryptionException("Exception while connecting enryption service ! ");
+			logger.error("ResourceAccessException while connecting decryption service : ", e);
+			throw new ExternalServiceException.ResourceAccessException("Exception while connecting decryption service ! ");
 		} catch (Exception e) {
 			logger.error("Exception in decryption service !: ", e);
-			throw new EncryptionException("Exception in encryption service ! ");
+			throw new ExternalServiceException.InternalException("Exception in decryption service ! ");
 		}
 	}
 
 	/** encrypts the input which is in Map format
 	 * @param propertyValue - input is in format Map<String, Object>
 	 * @return Map<String, Object>
-	 * @throws EncryptionException
+	 * @throws ExternalServiceException
 	 */
 	@Override
-	public Map<String, Object> encrypt(Map<String, Object> propertyValue) throws EncryptionException {
+	public Map<String, Object> encrypt(Map<String, Object> propertyValue) throws ExternalServiceException.ResourceAccessException,
+			ExternalServiceException.InternalException {
 		logger.debug("encrypt starts with value {}", propertyValue);
 		Map<String, Object> map = new HashMap<>();
 		map.put("value", propertyValue);
@@ -113,21 +116,22 @@ public class EncryptionServiceImpl implements EncryptionService {
 			return gson.fromJson(response.getBody(), new TypeToken<HashMap<String, Object>>() {
 			}.getType());
 		} catch (ResourceAccessException e) {
-			logger.error("Exception while connecting enryption service : ", e);
-			throw new EncryptionException("Exception while connecting enryption service! ");
+			logger.error("Exception while connecting encryption service : ", e);
+			throw new ExternalServiceException.ResourceAccessException("Exception while connecting encryption service! ");
 		} catch (Exception e) {
-			logger.error("Exception in encryption servie !: ", e);
-			throw new EncryptionException("Exception in encryption service.");
+			logger.error("Exception in encryption service !: ", e);
+			throw new ExternalServiceException.InternalException("Exception in encryption service.");
 		}
 	}
 
 	/** decrypts the input which is in Map format
 	 * @param propertyValue - input is in format Map<String, Object>
 	 * @return Map<String, Object>
-	 * @throws EncryptionException
+	 * @throws ExternalServiceException
 	 */
 	@Override
-	public Map<String, Object> decrypt(Map<String, Object> propertyValue) throws EncryptionException {
+	public Map<String, Object> decrypt(Map<String, Object> propertyValue) throws ExternalServiceException.ResourceAccessException,
+			ExternalServiceException.InternalException {
 		logger.debug("decrypt starts with value {}", propertyValue);
 		Map<String, Object> map = new HashMap<>();
 		map.put("value", propertyValue);
@@ -143,11 +147,11 @@ public class EncryptionServiceImpl implements EncryptionService {
 			return gson.fromJson(response.getBody(), new TypeToken<HashMap<String, Object>>() {
 			}.getType());
 		} catch (ResourceAccessException e) {
-			logger.error("Exception while connecting dcryption service : ", e);
-			throw new EncryptionException("Exception while connecting enryption service ! ");
+			logger.error("Exception while connecting decryption service : ", e);
+			throw new ExternalServiceException.ResourceAccessException("Exception while connecting decryption service ! ");
 		} catch (Exception e) {
 			logger.error("Exception in decryption service !: ", e);
-			throw new EncryptionException("Exception in encryption service ! ");
+			throw new ExternalServiceException.InternalException("Exception in decryption service ! ");
 		}
 	}
 

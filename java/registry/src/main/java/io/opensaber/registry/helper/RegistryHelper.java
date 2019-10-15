@@ -3,6 +3,9 @@ package io.opensaber.registry.helper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.opensaber.pojos.OpenSaberInstrumentation;
+import io.opensaber.registry.exception.ErrorConstants;
+import io.opensaber.registry.exception.OpenSaberException;
+import io.opensaber.registry.exception.ReadEntityException;
 import io.opensaber.registry.model.DBConnectionInfoMgr;
 import io.opensaber.registry.service.DecryptionHelper;
 import io.opensaber.registry.service.IReadService;
@@ -20,8 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 
 /**
@@ -65,10 +66,10 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public String addEntity(JsonNode inputJson, String userId) throws Exception {
+    public String addEntity(JsonNode inputJson, String userId) throws OpenSaberException {
         RecordIdentifier recordId = null;
-        String entityType = inputJson.fields().next().getKey();
-        try {
+        try{
+            String entityType = inputJson.fields().next().getKey();
             logger.info("Add api: entity type: {} and shard propery: {}", entityType, shardManager.getShardProperty());
             Shard shard = shardManager.getShard(inputJson.get(entityType).get(shardManager.getShardProperty()));
             watch.start("RegistryController.addToExistingEntity");
@@ -76,10 +77,21 @@ public class RegistryHelper {
             recordId = new RecordIdentifier(shard.getShardLabel(), resultId);
             watch.stop("RegistryController.addToExistingEntity");
             logger.info("AddEntity,{}", recordId.toString());
-        } catch (Exception e) {
-            logger.error("Exception in controller while adding entity !", e);
-            throw new Exception(e);
+        } catch(RuntimeException e) {
+            logger.error("Exception in addEntity", e);
+            if (e.getMessage().contains("unique constraint")) {
+                throw new OpenSaberException(ErrorConstants.DB_CONSTRAINT_ERROR_CODE, e.getMessage(), ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
+            } else {
+                throw new OpenSaberException(ErrorConstants.OS_CORE_INTERNAL_ERROR_CODE, e.getMessage(), ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
+            }
+        } catch(OpenSaberException e) {
+            logger.error("Exception in addEntity {}",e);
+            throw e;
+        } catch(Exception e) {
+            logger.error("Exception in addEntity {}",e);
+            throw new OpenSaberException(ErrorConstants.OS_CORE_INTERNAL_ERROR_CODE, e.getMessage(), ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
         }
+
         return recordId.toString();
     }
 
@@ -90,35 +102,43 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public JsonNode readEntity(JsonNode inputJson, String userId, boolean requireLDResponse) throws Exception {
+    public JsonNode readEntity(JsonNode inputJson, String userId, boolean requireLDResponse) throws OpenSaberException {
         logger.debug("readEntity starts");
         boolean includeSignatures = false;
-        boolean includePrivateFields =  false;
+        boolean includePrivateFields = false;
         JsonNode resultNode = null;
-        String entityType = inputJson.fields().next().getKey();
-        String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
-        RecordIdentifier recordId = RecordIdentifier.parse(label);
-        String shardId = dbConnectionInfoMgr.getShardId(recordId.getShardLabel());
-        Shard shard = shardManager.activateShard(shardId);
-        logger.info("Read Api: shard id: " + recordId.getShardLabel() + " for label: " + label);
-        JsonNode signatureNode = inputJson.get(entityType).get("includeSignatures");
-        if(null != signatureNode) {
-            includeSignatures = true;
+        try{
+            String entityType = inputJson.fields().next().getKey();
+            String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
+            RecordIdentifier recordId = RecordIdentifier.parse(label);
+            String shardId = dbConnectionInfoMgr.getShardId(recordId.getShardLabel());
+            Shard shard = shardManager.activateShard(shardId);
+            logger.info("Read Api: shard id: " + recordId.getShardLabel() + " for label: " + label);
+            JsonNode signatureNode = inputJson.get(entityType).get("includeSignatures");
+            if (null != signatureNode) {
+                includeSignatures = true;
+            }
+            ReadConfigurator configurator = ReadConfiguratorFactory.getOne(includeSignatures);
+            configurator.setIncludeTypeAttributes(requireLDResponse);
+            ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
+            if (viewTemplate != null) {
+                includePrivateFields = viewTemplateManager.isPrivateFieldEnabled(viewTemplate, entityType);
+            }
+            configurator.setIncludeEncryptedProp(includePrivateFields);
+            resultNode = readService.getEntity(shard, userId, recordId.getUuid(), entityType, configurator);
+            if (viewTemplate != null) {
+                ViewTransformer vTransformer = new ViewTransformer();
+                resultNode = includePrivateFields ? decryptionHelper.getDecryptedJson(resultNode) : resultNode;
+                resultNode = vTransformer.transform(viewTemplate, resultNode);
+            }
+            logger.debug("readEntity ends");
+        } catch (OpenSaberException e) {
+            logger.error("Exception in readEntity {}", e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Exception in readEntity {}", e);
+            throw new OpenSaberException(ErrorConstants.OS_CORE_INTERNAL_ERROR_CODE,e.getMessage(),ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
         }
-        ReadConfigurator configurator = ReadConfiguratorFactory.getOne(includeSignatures);
-        configurator.setIncludeTypeAttributes(requireLDResponse);
-        ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
-        if (viewTemplate != null) {
-            includePrivateFields = viewTemplateManager.isPrivateFieldEnabled(viewTemplate,entityType);
-        }
-        configurator.setIncludeEncryptedProp(includePrivateFields);
-        resultNode =  readService.getEntity(shard, userId, recordId.getUuid(), entityType, configurator);
-        if (viewTemplate != null) {
-            ViewTransformer vTransformer = new ViewTransformer();
-            resultNode = includePrivateFields ? decryptionHelper.getDecryptedJson(resultNode) : resultNode;
-            resultNode = vTransformer.transform(viewTemplate, resultNode);
-        }
-        logger.debug("readEntity ends");
         return resultNode;
 
     }
@@ -129,7 +149,7 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public JsonNode readEntity(JsonNode inputJson, String userId) throws Exception {
+    public JsonNode readEntity(JsonNode inputJson, String userId) throws OpenSaberException {
         return readEntity(inputJson,userId,false);
     }
 
@@ -138,16 +158,22 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public JsonNode searchEntity(JsonNode inputJson) throws Exception {
+    public JsonNode searchEntity(JsonNode inputJson) throws OpenSaberException {
         logger.debug("searchEntity starts");
-        JsonNode resultNode = searchService.search(inputJson);
-        ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
-        if (viewTemplate != null) {
-            ViewTransformer vTransformer = new ViewTransformer();
-            resultNode = vTransformer.transform(viewTemplate, resultNode);
+        JsonNode resultNode = null;
+        try{
+            resultNode = searchService.search(inputJson);
+            ViewTemplate viewTemplate = viewTemplateManager.getViewTemplate(inputJson);
+            if (viewTemplate != null) {
+                ViewTransformer vTransformer = new ViewTransformer();
+                resultNode = vTransformer.transform(viewTemplate, resultNode);
+            }
+            // Search is tricky to support LD. Needs a revisit here.
+            logger.debug("searchEntity ends");
+        } catch (Exception e) {
+            logger.error("Exception in searchEntity {}", e);
+            throw new OpenSaberException(ErrorConstants.OS_CORE_INTERNAL_ERROR_CODE,e.getMessage(),ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
         }
-        // Search is tricky to support LD. Needs a revisit here.
-        logger.debug("searchEntity ends");
         return resultNode;
     }
 
@@ -157,16 +183,24 @@ public class RegistryHelper {
      * @return
      * @throws Exception
      */
-    public String updateEntity(JsonNode inputJson, String userId) throws Exception {
+    public String updateEntity(JsonNode inputJson, String userId) throws OpenSaberException {
         logger.debug("updateEntity starts");
-        String entityType = inputJson.fields().next().getKey();
-        String jsonString = objectMapper.writeValueAsString(inputJson);
-        Shard shard = shardManager.getShard(inputJson.get(entityType).get(shardManager.getShardProperty()));
-        String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
-        RecordIdentifier recordId = RecordIdentifier.parse(label);
-        logger.info("Update Api: shard id: " + recordId.getShardLabel() + " for uuid: " + recordId.getUuid());
-        registryService.updateEntity(shard, userId, recordId.getUuid(), jsonString);
-        logger.debug("updateEntity ends");
+        try{
+            String entityType = inputJson.fields().next().getKey();
+            String jsonString = objectMapper.writeValueAsString(inputJson);
+            Shard shard = shardManager.getShard(inputJson.get(entityType).get(shardManager.getShardProperty()));
+            String label = inputJson.get(entityType).get(dbConnectionInfoMgr.getUuidPropertyName()).asText();
+            RecordIdentifier recordId = RecordIdentifier.parse(label);
+            logger.info("Update Api: shard id: " + recordId.getShardLabel() + " for uuid: " + recordId.getUuid());
+            registryService.updateEntity(shard, userId, recordId.getUuid(), jsonString);
+            logger.debug("updateEntity ends");
+        } catch (OpenSaberException e) {
+            logger.error("Exception in updateEntity {}", e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Exception in updateEntity {}", e);
+            throw new OpenSaberException(ErrorConstants.OS_CORE_INTERNAL_ERROR_CODE,e.getMessage(),ErrorConstants.OS_CORE_INTERNAL_ERROR_STATUS);
+        }
         return "SUCCESS";
     }
 

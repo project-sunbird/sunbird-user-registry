@@ -11,9 +11,6 @@ import io.opensaber.registry.dao.RegistryDaoImpl;
 import io.opensaber.registry.dao.SearchDao;
 import io.opensaber.registry.dao.SearchDaoImpl;
 import io.opensaber.registry.dao.VertexWriter;
-import io.opensaber.registry.exception.AuditFailedException;
-import io.opensaber.registry.exception.EncryptionException;
-import io.opensaber.registry.exception.RecordNotFoundException;
 import io.opensaber.registry.middleware.util.Constants;
 import io.opensaber.registry.model.DBConnectionInfoMgr;
 import io.opensaber.registry.sink.DBProviderFactory;
@@ -74,7 +71,7 @@ public class SearchDaoImplTest {
     }
 
     @Test
-    public void test_search_no_response() throws AuditFailedException, EncryptionException, RecordNotFoundException {
+    public void test_search_no_response() {
         SearchQuery searchQuery = getSearchQuery(entities, "", "", FilterOperators.eq);//new SearchQuery("", 0, 0);
         JsonNode result = searchDao.search(graph, searchQuery);
         assertTrue(result.get("Teacher").size() == 0);

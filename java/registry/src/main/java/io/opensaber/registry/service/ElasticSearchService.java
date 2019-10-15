@@ -67,7 +67,7 @@ public class ElasticSearchService implements ISearchService {
                 }
             }
             catch (Exception e) {
-                logger.error("Elastic search operation - {}", e);
+                logger.error("Elastic search operation failed - {}", e);
             }
 
         }

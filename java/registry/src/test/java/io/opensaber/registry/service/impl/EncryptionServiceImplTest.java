@@ -2,7 +2,7 @@ package io.opensaber.registry.service.impl;
 
 import com.google.gson.Gson;
 import io.opensaber.pojos.OpenSaberInstrumentation;
-import io.opensaber.registry.exception.EncryptionException;
+import io.opensaber.registry.exception.ExternalServiceException;
 import io.opensaber.registry.middleware.util.Constants;
 import org.junit.Before;
 import org.junit.Rule;
@@ -88,13 +88,13 @@ public class EncryptionServiceImplTest{
 		assertThat(encryptionServiceImpl.encrypt(propertyMap), is(notNullValue()));
 	}
 
-	@Test(expected = EncryptionException.class)
+	@Test(expected = ExternalServiceException.ResourceAccessException.class)
 	public void test_encrypt_api_object_param_throwing_resource_exception() throws Exception {
 		when(retryRestTemplate.postForEntity(nullable(String.class), any(Object.class))).thenThrow(ResourceAccessException.class);
 		assertThat(encryptionServiceImpl.encrypt(new Object()), is(notNullValue()));
 	}
 
-	@Test(expected = EncryptionException.class)
+	@Test(expected = ExternalServiceException.ResourceAccessException.class)
 	public void test_encrypt_api_map_param_throwing_resource_exception() throws Exception {
 		when(retryRestTemplate.postForEntity(nullable(String.class), any(Object.class))).thenThrow(ResourceAccessException.class);
 		encryptionServiceImpl.encrypt(new HashMap<>());
@@ -112,7 +112,7 @@ public class EncryptionServiceImplTest{
 		assertThat(encryptionServiceImpl.decrypt(new Object()), is(notNullValue()));
 	}
 
-	@Test(expected = EncryptionException.class)
+	@Test(expected = ExternalServiceException.ResourceAccessException.class)
 	public void test_decrypt_api_object_param_throwing_resource_exception() throws Exception {
 		when(retryRestTemplate.postForEntity(nullable(String.class), any(Object.class))).thenThrow(ResourceAccessException.class);
 		encryptionServiceImpl.decrypt(new Object());
@@ -139,7 +139,7 @@ public class EncryptionServiceImplTest{
 		assertThat(encryptionServiceImpl.decrypt(propertyMap), is(notNullValue()));
 	}
 
-	@Test(expected = EncryptionException.class)
+	@Test(expected = ExternalServiceException.ResourceAccessException.class)
 	public void test_decrypt_api_map_param_throwing_resource_exception() throws Exception {
 		when(retryRestTemplate.postForEntity(nullable(String.class), any(Object.class))).thenThrow(ResourceAccessException.class);
 		encryptionServiceImpl.decrypt(new HashMap<>());
